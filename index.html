@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>NYC Subway Mission</title>
+<title>NYC Travel Missions</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 :root{--ink:#1d1f24;--muted:#6b6f78;--line:#e3e5e9;--bg:#f6f7f9;--accent:#0039a6;--fish-accent:#0039a6}
@@ -19,15 +19,17 @@ main{max-width:900px;margin:0 auto;padding:22px 24px 120px;display:grid;gap:18px
 .opt{border:1px solid var(--line);border-radius:10px;padding:14px 16px;font-size:18px}
 .opt b{color:var(--accent);margin-right:6px}
 .cond{font-size:19px;margin:0;padding:12px 16px;background:#fff7e0;border-radius:10px}
+.menu{width:100%;border-collapse:collapse;margin:0 0 20px;font-size:16px}.menu td{padding:6px 4px;border-bottom:1px solid var(--line)}.menu td:last-child{text-align:right;white-space:nowrap;color:var(--muted)}
 .hint{color:var(--muted);font-size:14px;text-align:center}
 @media(max-width:640px){.opts{grid-template-columns:1fr}}
 </style></head><body>
-<header><div class="dot">M</div><h1>NYC Subway Mission</h1></header>
+<header><div class="dot">M</div><h1>NYC Travel Missions</h1></header>
 <main>
 <div class="tabs" id="tabs"></div>
 <section class="card">
 <div id="annBox"><p class="label">Announcement</p><audio id="ann" controls preload="none" style="width:100%;margin:0 0 20px"></audio></div>
 <p class="label">Your mission</p><p class="front" id="front"></p>
+<div id="menuBox" hidden><p class="label">Menu</p><table class="menu" id="menu"></table></div>
 <p class="label" id="optLabel">Choose one</p><div class="opts" id="opts"></div>
 <p class="label" id="condLabel">Your situation</p><p class="cond" id="cond"></p>
 </section>
@@ -35,16 +37,18 @@ main{max-width:900px;margin:0 auto;padding:22px 24px 120px;display:grid;gap:18px
 </main>
 <div id="agentSlot"></div>
 <script>
-const M = [{"title": "1. Express skips a stop", "front": "You are on an uptown A train at 42 St–Port Authority. Choose where you want to go, then ask the station attendant for help. Tell the attendant about your situation.", "options": ["American Museum of Natural History", "Apollo Theater in Harlem"], "condition": "You are in a hurry.", "agent": "d26e442b87bf4d2fa61e77e5c2571394"}, {"title": "2. Which platform?", "front": "You are on the 1 train platform at Times Sq–42 St. The sign says “Uptown & The Bronx.” A train is coming. Choose where you want to go and ask the attendant if this is the right train.", "options": ["Staten Island Ferry", "Central Park (Columbus Circle)"], "condition": "You don't want to change trains.", "agent": "a353ccbcc46743609b33bdd0294201c2"}, {"title": "3. Phone call: How's New York?", "front": "Your friend Emma from Chicago is calling you. She wants to hear about your trip to New York.", "options": ["Tell her about one place you visited and how it was.", "Ask Emma one question back."], "condition": "Answer with details, not just yes or no.", "agent": "9b3af95cbea7486b99a34a6f3030f2d5", "chat": true}, {"title": "4. Station skipped (classroom scenario)", "front": "You are on an uptown C train at 59 St–Columbus Circle. Choose where you want to go. Listen to the announcement, then ask the attendant for help.", "options": ["Strawberry Fields in Central Park", "American Museum of Natural History"], "condition": "You don't want to walk much.", "agent": "e4830977e8cd451faa1b753adaf6e813"}, {"title": "5. Phone call: Let's hang out!", "front": "Your friend Maya lives in New York. She is calling to make plans to meet you.", "options": ["Tell her what you want to do or eat, and why.", "Agree on a day, a time, and a place to meet."], "condition": "Answer with details, not just yes or no.", "agent": "b9b4d41935a74fd8a11dfeefae2467aa", "chat": true}, {"title": "6. Phone call: Tell me about Korea", "front": "Your friend Olivia is planning her first trip to Korea. She is calling to ask you about it.", "options": ["Recommend one place or food, and say why.", "Tell her a little about your life after the exam."], "condition": "Answer with details, not just yes or no.", "agent": "593137b8195f4afda7e33150587e4ab3", "chat": true}];
+const M = [{"type": "attendant", "title": "1. Express skips a stop", "front": "You are on an uptown A train at 42 St–Port Authority. Choose where you want to go, then ask the station attendant for help. Tell the attendant about your situation.", "options": ["American Museum of Natural History", "Apollo Theater in Harlem"], "condition": "You are in a hurry.", "fictional": false, "audio": "a1.mp3", "agent": "d26e442b87bf4d2fa61e77e5c2571394"}, {"type": "attendant", "title": "2. Station skipped (classroom scenario)", "front": "You are on an uptown C train at 59 St–Columbus Circle. Choose where you want to go. Listen to the announcement, then ask the attendant for help.", "options": ["Strawberry Fields in Central Park", "American Museum of Natural History"], "condition": "You don't want to walk much.", "fictional": true, "audio": "a4.mp3", "agent": "e4830977e8cd451faa1b753adaf6e813"}, {"type": "chat", "title": "3. Phone call: How's New York?", "front": "Your friend Emma from Chicago is calling you. She wants to hear about your trip to New York.", "options": ["Tell her about one place you visited and how it was.", "Ask Emma one question back."], "condition": "Answer with details, not just yes or no.", "agent": "9b3af95cbea7486b99a34a6f3030f2d5"}, {"type": "chat", "title": "4. Phone call: Let's hang out!", "front": "Your friend Maya lives in New York. She is calling to make plans to meet you.", "options": ["Tell her what you want to do or eat, and why.", "Agree on a day, a time, and a place to meet."], "condition": "Answer with details, not just yes or no.", "agent": "b9b4d41935a74fd8a11dfeefae2467aa"}, {"type": "order", "title": "5. McDonald's drive-thru", "agent": "a353ccbcc46743609b33bdd0294201c2", "front": "You are on a road trip with a friend. You are at a McDonald's drive-thru. Order for both of you through the speaker.", "options": ["Your friend wants a McChicken meal with a Sprite.", "Choose something for yourself from the menu."], "condition": "You don't like pickles.", "menu": [["Big Mac", "$6.49"], ["Quarter Pounder with Cheese", "$6.79"], ["McChicken", "$3.29"], ["10 pc Chicken McNuggets", "$6.29"], ["Filet-O-Fish", "$5.49"], ["Make it a meal (medium fries + medium drink)", "+$4.00"], ["Fries  S / M / L", "$2.49 / $3.49 / $4.29"], ["Drink (Coke, Diet Coke, Sprite, iced tea)  S / M / L", "$1.79 / $2.29 / $2.79"], ["McFlurry with Oreo", "$4.49"], ["Apple Pie", "$1.79"]]}, {"type": "order", "title": "6. McDonald's counter (something's sold out)", "agent": "593137b8195f4afda7e33150587e4ab3", "front": "You are at a busy McDonald's in Times Square. Order a meal and a dessert at the counter.", "options": ["Order a meal and a dessert.", "Ask for one special thing (extra sauce, no ice, no onions…)."], "condition": "If something isn't available, choose something else.", "menu": [["Big Mac", "$6.49"], ["Quarter Pounder with Cheese", "$6.79"], ["McChicken", "$3.29"], ["10 pc Chicken McNuggets", "$6.29"], ["Filet-O-Fish", "$5.49"], ["Make it a meal (medium fries + medium drink)", "+$4.00"], ["Fries  S / M / L", "$2.49 / $3.49 / $4.29"], ["Drink (Coke, Diet Coke, Sprite, iced tea)  S / M / L", "$1.79 / $2.29 / $2.79"], ["McFlurry with Oreo", "$4.49"], ["Apple Pie", "$1.79"]]}];
 let cur=0;const $=id=>document.getElementById(id);
 function render(){
  const m=M[cur];
  $("tabs").innerHTML=M.map((k,i)=>`<button class="${i===cur?'on':''}" data-i="${i}">${k.title}</button>`).join("");
  $("front").textContent=m.front;
- const a=$("ann"); $("annBox").style.display=m.chat?"none":""; if(m.chat){a.pause();a.removeAttribute("src");}else a.src=`https://cdn.jsdelivr.net/gh/F10W3R-13/nyc-subway-mission@main/audio/a${cur+1}.mp3`;
- $("optLabel").textContent=m.chat?"Try to":"Choose one"; $("condLabel").textContent=m.chat?"Your goal":"Your situation";
- $("hint").textContent=m.chat?"Tap the button at the bottom right to answer the call.":"Tap the button at the bottom right to talk to the station attendant.";
- $("opts").innerHTML=m.options.map((o,i)=>`<div class="opt"><b>${m.chat?"•":"AB"[i]}</b>${o}</div>`).join("");
+ const a=$("ann"); const att=m.type==="attendant";
+ $("annBox").style.display=att?"":"none"; if(att) a.src=`https://cdn.jsdelivr.net/gh/F10W3R-13/nyc-subway-mission@main/audio/${m.audio}`; else {a.pause();a.removeAttribute("src");}
+ $("menuBox").hidden=!m.menu; if(m.menu) $("menu").innerHTML=m.menu.map(([n,p])=>`<tr><td>${n}</td><td>${p}</td></tr>`).join("");
+ $("optLabel").textContent=att?"Choose one":"Try to"; $("condLabel").textContent=att?"Your situation":(m.type==="order"?"Remember":"Your goal");
+ $("hint").textContent={attendant:"Tap the button at the bottom right to talk to the station attendant.",chat:"Tap the button at the bottom right to answer the call.",order:"Tap the button at the bottom right to start ordering."}[m.type];
+ $("opts").innerHTML=m.options.map((o,i)=>`<div class="opt"><b>${m.type==="attendant"?"AB"[i]:"•"}</b>${o}</div>`).join("");
  $("cond").textContent=m.condition;
  const slot=$("agentSlot");slot.innerHTML="";
  const el=document.createElement("fish-agent");el.setAttribute("agent-id",m.agent);slot.appendChild(el);
