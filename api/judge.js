@@ -42,10 +42,11 @@ const MODEL = process.env.JUDGE_MODEL || "deepseek-v4.1-flash";
 
 async function callLLM(prompt) {
   let last;
+  const session = require("crypto").randomUUID();
   for (const url of ENDPOINTS) {
     const r = await fetch(url, {
       method: "POST",
-      headers: { "Content-Type": "application/json", "Authorization": `Bearer ${process.env.OPENCODE_API_KEY}` },
+      headers: { "Content-Type": "application/json", "Authorization": `Bearer ${process.env.OPENCODE_API_KEY}`, "x-opencode-session": session, "User-Agent": "speaking-missions-judge/1.0" },
       body: JSON.stringify({ model: MODEL, temperature: 0.2, max_tokens: 800,
         messages: [{ role: "system", content: "You are a fair English-speaking-task judge. Reply with JSON only." }, { role: "user", content: prompt }] })
     });
