@@ -115,7 +115,7 @@
   "front": "Your friend Emma from Chicago is calling you. She wants to hear about your trip to New York.",
   "options": [
    "Tell her about one place you visited and how it was.",
-   "Ask Emma one question back."
+   "Tell her about one food you tried and what you thought."
   ],
   "condition": "Answer with details, not just yes or no.",
   "friend": "Emma",
@@ -137,7 +137,7 @@
     ""
    ],
    [
-    "Ask Emma one question back.",
+    "Tell her about one food you tried and what you thought.",
     ""
    ]
   ],
