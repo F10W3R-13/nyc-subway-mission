@@ -47,7 +47,7 @@ async function callLLM(prompt) {
     const r = await fetch(url, {
       method: "POST",
       headers: { "Content-Type": "application/json", "Authorization": `Bearer ${process.env.OPENCODE_API_KEY}`, "x-opencode-session": session, "User-Agent": "speaking-missions-judge/1.0" },
-      body: JSON.stringify({ model: MODEL, temperature: 0.2, max_tokens: 4000, reasoning_effort: "low",
+      body: JSON.stringify({ model: MODEL, temperature: 0.2, max_tokens: 32000, reasoning_effort: "low",
         messages: [{ role: "system", content: "You are a fair English-speaking-task judge. Reply with JSON only." }, { role: "user", content: prompt }] })
     });
     if ([401, 402, 403, 404].includes(r.status)) { last = r.status; continue; }

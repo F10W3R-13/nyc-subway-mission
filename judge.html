@@ -77,7 +77,12 @@
   <section class="panel">
     <p class="label">Conversation transcript</p>
     <p class="muted" style="margin:0 0 8px">The AI judges whether the task was done, from the transcript. Speech recognition may tidy up grammar and pronunciation, so grammar and clarity are judged by people, not the AI.</p>
-    <textarea id="tx" placeholder="Paste the conversation from Fish Audio here.&#10;Student: ...&#10;Partner: ..."></textarea>
+    <div id="calls" style="margin-bottom:10px">
+      <button class="act" id="loadCalls" type="button" style="background:#fff;color:var(--ink);border:1px solid var(--line)">Load recent calls</button>
+      <span id="callsMsg" style="color:var(--muted);font-size:13px;margin-left:8px">Pick a call to judge it — no pasting needed.</span>
+      <div id="callList" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:8px"></div>
+    </div>
+    <textarea id="tx" placeholder="Pick a call above, or paste a conversation here.&#10;Student: ...&#10;Partner: ..."></textarea>
     <div class="err" id="err"></div>
     <div class="row">
       <button class="act" id="judge">Judge</button>
@@ -449,7 +454,7 @@ function render() {
   }).join("");
   $("out").hidden = true; $("err").textContent = ""; $("status").textContent = ""; $("heard").checked = false;
 }
-$("tabs").addEventListener("click", e => { const b = e.target.closest("button"); if (!b) return; cur = +b.dataset.i; render(); });
+$("tabs").addEventListener("click", e => { const b = e.target.closest("button"); if (!b) return; cur = +b.dataset.i; render(); $("callList").innerHTML=""; if ($("pin").value.trim()) loadCalls(); });
 $("toggleAns").addEventListener("click", () => { const p = $("checkPanel"); p.classList.toggle("show-ans"); $("toggleAns").textContent = p.classList.contains("show-ans") ? "Hide answers" : "Show answers"; });
 $("clear").addEventListener("click", () => { $("tx").value = ""; $("out").hidden = true; $("err").textContent = ""; render(); });
 $("tx").addEventListener("input", () => { $("err").textContent = ""; });
@@ -483,6 +488,23 @@ function esc(s){ return String(s||"").replace(/[&<>"]/g, ch=>({"&":"&amp;","<":"
 
 render();
 try { $("pin").value = localStorage.getItem("judgePin") || ""; } catch {}
+async function api(body){ const r=await fetch("/api/sessions",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({...body,pin:$("pin").value.trim(),mission:cur})}); const j=await r.json().catch(()=>({})); if(!r.ok) throw new Error({pin:"Wrong teacher PIN.",not_configured:"Call history is not set up yet (Fish API key missing)."}[j.error]||"Could not load calls ("+(j.error||r.status)+")."); return j; }
+async function loadCalls(){
+  const list=$("callList"), msg=$("callsMsg"); list.innerHTML="";
+  if(!$("pin").value.trim()){ msg.textContent="Enter the teacher PIN first."; return; }
+  msg.textContent="Loading…";
+  try{
+    const {sessions}=await api({});
+    msg.textContent=sessions.length?"Newest first. Click one to judge it.":"No calls for this mission yet.";
+    sessions.forEach(s=>{ const b=document.createElement("button"); b.type="button"; b.className="act";
+      b.style.cssText="background:#fff;color:var(--ink);border:1px solid var(--line);font-size:13px;padding:6px 10px";
+      const t=s.started?new Date(s.started).toLocaleTimeString([], {hour:"2-digit",minute:"2-digit"}):"?";
+      b.textContent=t+(s.seconds?" · "+Math.floor(s.seconds/60)+"m "+Math.round(s.seconds%60)+"s":"")+(s.status==="active"?" · live":"");
+      b.onclick=async()=>{ msg.textContent="Loading the conversation…"; try{ const {transcript}=await api({sessionId:s.id}); if(!transcript){msg.textContent="That call has no transcript.";return;} $("tx").value=transcript; msg.textContent="Loaded. Judging…"; $("judge").click(); }catch(e){ msg.textContent=e.message; } };
+      list.appendChild(b); });
+  }catch(e){ msg.textContent=e.message; }
+}
+$("loadCalls").addEventListener("click", loadCalls);
 </script>
 </body>
 </html>
