@@ -55,7 +55,7 @@ async function callLLM(prompt) {
     const j = await r.json();
     const text = (j.choices && j.choices[0] && j.choices[0].message && j.choices[0].message.content) || "";
     const m = text.match(/\{[\s\S]*\}/);
-    if (!m) throw new Error("bad_json");
+    if (!m) throw new Error("bad_json " + JSON.stringify({ finish: j.choices && j.choices[0] && j.choices[0].finish_reason, content: text.slice(0, 200), keys: Object.keys((j.choices && j.choices[0] && j.choices[0].message) || {}), usage: j.usage }));
     return JSON.parse(m[0]);
   }
   throw new Error("auth_" + last);
