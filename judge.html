@@ -3,110 +3,110 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Speaking Missions · Judge</title>
+<title>AI judge · Speaking Missions</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/shell.css">
 <style>
-  :root { --ink:#1d1f24; --muted:#6b6f78; --line:#e3e5e9; --bg:#f7f7f5; --card:#fff; --accent:#3d5afe; --ok:#1f7a4d; --okbg:#e6f4ec; --no:#b3261e; --nobg:#fbe9e7; }
-  * { box-sizing:border-box; }
-  body { margin:0; font-family:Inter, system-ui, sans-serif; color:var(--ink); background:var(--bg); }
-  header { max-width:1100px; margin:0 auto; padding:28px 24px 0; }
-  header h1 { margin:0; font-size:26px; font-weight:700; letter-spacing:-.01em; }
-  header p { margin:6px 0 0; color:var(--muted); font-size:15px; }
-  .tabs button .n { display:inline-grid; place-items:center; width:20px; height:20px; border-radius:50%; color:#fff; font-size:11px; font-weight:600; margin-right:6px; }
-  .badge { display:inline-block; font-size:13px; font-weight:600; padding:4px 10px; border-radius:999px; margin:0 0 10px; }
-  main { max-width:1100px; margin:0 auto; padding:20px 24px 48px; display:grid; gap:20px; }
-  .tabs { display:flex; flex-wrap:wrap; gap:8px; }
-  .tabs button { border:1px solid var(--line); background:var(--card); padding:8px 14px; border-radius:999px; font:inherit; font-size:14px; cursor:pointer; }
-  .tabs button.on { background:var(--ink); color:#fff; border-color:var(--ink); }
-  .panel { background:var(--card); border:1px solid var(--line); border-radius:16px; box-shadow:0 1px 3px rgba(0,0,0,.04); padding:20px 24px; }
-  .grid { display:grid; grid-template-columns: 1.3fr 1fr; gap:20px; }
-  @media (max-width:820px) { .grid { grid-template-columns:1fr; } }
-  .label { font-size:12px; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); margin:0 0 6px; }
-  .front { font-size:22px; line-height:1.45; margin:0 0 16px; }
-  .ann { background:#111; color:#f2f2f2; border-radius:10px; padding:14px 16px; font-size:15px; line-height:1.5; }
-  ol.check { margin:0; padding:0; list-style:none; display:grid; gap:10px; counter-reset:c; }
-  ol.check li { counter-increment:c; display:flex; gap:12px; align-items:flex-start; font-size:17px; padding:10px 12px; border:1px solid var(--line); border-radius:10px; }
-  ol.check li::before { content:counter(c); flex:none; width:26px; height:26px; border-radius:50%; background:var(--bg); display:grid; place-items:center; font-size:13px; font-weight:600; }
-  ol.check li.yes { background:var(--okbg); border-color:#b7dfc8; }
-  ol.check li.no { background:var(--nobg); border-color:#f3c3bd; }
-  .ans { color:var(--muted); font-size:14px; display:none; }
-  .show-ans .ans { display:block; }
-  .row { display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
-  button.act { font:inherit; font-size:14px; padding:9px 16px; border-radius:8px; border:1px solid var(--ink); background:var(--ink); color:#fff; cursor:pointer; }
-  button.ghost { background:#fff; color:var(--ink); border-color:var(--line); }
-  button:disabled { opacity:.5; cursor:default; }
-  textarea { width:100%; min-height:170px; font:inherit; font-size:14px; line-height:1.5; padding:12px; border:1px solid var(--line); border-radius:10px; resize:vertical; }
-  .err { color:var(--no); font-size:13px; min-height:18px; }
-  .result { font-size:28px; font-weight:600; margin:4px 0 12px; }
-  .result.ok { color:var(--ok); } .result.no { color:var(--no); }
-  .tips { margin:0; padding-left:18px; line-height:1.6; }
-  .tag { font-size:12px; padding:2px 8px; border-radius:999px; background:#fff4d6; color:#7a5300; margin-left:8px; vertical-align:middle; }
-  .muted { color:var(--muted); font-size:13px; }
-  .human { display:flex; gap:10px; align-items:center; font-size:16px; padding:10px 12px; border:1px dashed var(--line); border-radius:10px; cursor:pointer; }
-  .fb { font-size:14px; color:var(--muted); margin-top:4px; line-height:1.5; }
-  .human input { width:18px; height:18px; }
+  .calls{display:flex;flex-wrap:wrap;gap:var(--s2)}
+  .call{border:1px solid var(--line-2);background:var(--card);border-radius:var(--r-s);padding:8px 12px;font-size:14px;cursor:pointer;font-variant-numeric:tabular-nums;display:flex;gap:var(--s2);align-items:baseline}
+  .call:hover{background:var(--hover)}
+  .call.on{border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink)}
+  .call .d{color:var(--muted);font-size:13px}
+  .call .new{font-size:11px;font-weight:600;color:var(--ok);background:var(--okbg);border-radius:999px;padding:1px 6px}
+  .status{margin:var(--s3) 0 0;font-size:14px;color:var(--muted);min-height:21px}
+  .status.err{color:var(--no)}
+  details.paste{margin-top:var(--s4);border-top:1px solid var(--line);padding-top:var(--s3)}
+  details.paste summary{cursor:pointer;font-size:14px;color:var(--muted);width:max-content}
+  details.paste summary:hover{color:var(--ink)}
+  textarea{width:100%;min-height:150px;margin-top:var(--s3);font:inherit;font-size:14px;line-height:1.5;padding:var(--s3);border:1px solid var(--line-2);border-radius:var(--r-s);resize:vertical}
+  .row{display:flex;gap:var(--s2);flex-wrap:wrap;align-items:center;margin-top:var(--s3)}
+
+  .verdict{display:flex;align-items:baseline;gap:var(--s3);flex-wrap:wrap;margin-bottom:var(--s2)}
+  .verdict b{font-size:26px;font-weight:700;letter-spacing:-.01em}
+  .verdict.ok b{color:var(--ok)} .verdict.no b{color:var(--no)}
+  .verdict span{font-size:14px;color:var(--muted)}
+  .summary{margin:0 0 var(--s5);font-size:16px;line-height:1.65;max-width:68ch}
+  ol.check{margin:0;padding:0;list-style:none;display:grid;gap:var(--s2);counter-reset:c}
+  ol.check li{counter-increment:c;display:flex;gap:var(--s3);align-items:flex-start;font-size:16px;line-height:1.45;padding:var(--s3);border:1px solid var(--line);border-radius:var(--r-s)}
+  ol.check li::before{content:counter(c);flex:none;width:24px;height:24px;border-radius:50%;background:var(--bg);display:grid;place-items:center;font-size:12px;font-weight:600}
+  ol.check li.yes{background:var(--okbg);border-color:var(--okline)} ol.check li.yes::before{content:"✓";background:var(--ok);color:#fff}
+  ol.check li.no{background:var(--nobg);border-color:var(--noline)} ol.check li.no::before{background:var(--no);color:#fff}
+  .ans{color:var(--muted);font-size:14px;margin-top:2px;display:none}
+  .show-ans .ans{display:block}
+  .fb{font-size:14px;color:var(--ink-2);margin-top:4px;line-height:1.5}
+  .fb q{color:var(--ink);font-style:normal}
+  .fb .v{color:var(--muted);font-variant-numeric:tabular-nums}
+  .human{display:flex;gap:var(--s3);align-items:center;font-size:15px;margin-top:var(--s3);padding:var(--s3);border:1px dashed var(--line-2);border-radius:var(--r-s);cursor:pointer}
+  .human input{width:18px;height:18px;accent-color:var(--ink)}
+  .feedback{margin-top:var(--s6);display:grid;gap:var(--s5)}
+  .feedback h3{margin:0 0 var(--s2);font-size:15px;font-weight:600}
+  .feedback ul{margin:0;padding:0;list-style:none;display:grid;gap:var(--s3)}
+  .feedback li{line-height:1.55}
+  .feedback .why{display:block;color:var(--muted);font-size:14px}
+  .swap{font-size:15px}
+  .swap s{color:var(--muted);text-decoration-color:var(--line-2)}
+  .swap b{font-weight:600}
+  .next{margin:0;padding:var(--s3) var(--s4);background:var(--note);color:var(--note-ink);border-radius:var(--r-s);line-height:1.6}
+  .fine{margin:var(--s4) 0 0;font-size:13px;color:var(--muted)}
+
+  .card-front{margin:0 0 var(--s4);font-size:16px;line-height:1.6;max-width:68ch}
+  .card-grid{display:grid;grid-template-columns:1fr 1fr;gap:var(--s5)}
+  .card-grid ul{margin:0;padding-left:20px;line-height:1.6}
+  .ann{background:#16181d;color:#f0f0ee;border-radius:var(--r-s);padding:var(--s3) var(--s4);font-size:14px;line-height:1.55}
+  @media (max-width:820px){.card-grid{grid-template-columns:1fr;gap:var(--s4)}}
 </style>
 </head>
 <body>
-<header><h1>Speaking Missions · Judge</h1><p>Paste a conversation, then let the AI check it against the mission checklist.</p></header>
-<main>
-  <div class="tabs" id="tabs"></div>
+<header class="top"><div class="in">
+  <a class="brand" href="/">Speaking Missions</a>
+  <nav class="switch" aria-label="Pages"><a href="/">Missions</a><a href="/judge.html" aria-current="page">AI judge</a></nav>
+  <div class="end"><label class="muted" for="pin">PIN</label><input class="field" id="pin" type="password" autocomplete="off" placeholder="Teacher PIN"></div>
+</div></header>
+<div class="frame">
+  <nav class="missions" id="tabs" aria-label="Missions"></nav>
+  <main style="min-width:0">
+    <div class="head" style="margin-bottom:var(--s5)"><h1 id="title"></h1><p class="meta" id="meta"></p></div>
 
-  <div class="grid">
     <section class="panel">
-      <div class="badge" id="badge"></div>
-      <p class="label">Mission card <span id="fictional"></span></p>
-      <p class="front" id="front"></p>
-      <p class="label" id="optLabel">Choose one</p>
-      <ul id="opts" style="margin:0 0 14px;padding-left:20px;font-size:18px;line-height:1.6"></ul>
-      <p class="label" id="condLabel">Your situation</p>
-      <p style="font-size:18px;margin:0 0 16px" id="cond"></p>
-      <div id="annBox"><p class="label">Announcement</p>
-      <div class="ann" id="ann"></div></div>
+      <div class="ph"><h2>Pick a call to judge</h2><button class="btn ghost small" id="loadCalls" type="button">Refresh</button></div>
+      <div class="calls" id="callList"></div>
+      <p class="status" id="callsMsg"></p>
+      <details class="paste">
+        <summary>Paste a transcript instead</summary>
+        <textarea id="tx" placeholder="Student: ...&#10;Partner: ..."></textarea>
+        <div class="row"><button class="btn" id="judge" type="button">Judge</button><button class="btn ghost" id="clear" type="button">Clear</button></div>
+      </details>
     </section>
+
     <section class="panel" id="checkPanel">
-      <p class="label">Checklist — AI judge (task, from the transcript)</p>
-      <ol class="check" id="check"></ol>
-      <p class="label" style="margin-top:16px">Class panel — judged by ear</p>
-      <label class="human"><input type="checkbox" id="heard"> Easy to understand without reading the transcript</label>
-      <div class="row" style="margin-top:14px">
-        <button class="ghost act" id="toggleAns">Show answers</button>
+      <div id="out" hidden>
+        <div class="verdict" id="verdictRow"><b id="verdict"></b><span id="runs"></span></div>
+        <p class="summary" id="summary"></p>
       </div>
+      <div class="ph"><h2>Checklist</h2><button class="btn ghost small" id="toggleAns" type="button">Show answers</button></div>
+      <ol class="check" id="check"></ol>
+      <label class="human"><input type="checkbox" id="heard"> Class panel: easy to understand by ear, without reading the transcript</label>
+      <div class="feedback" id="fb" hidden>
+        <div><h3>잘한 점</h3><ul id="strengths"></ul></div>
+        <div><h3>이렇게도 말할 수 있어요</h3><ul id="tips"></ul></div>
+        <div><h3>다음 대화에서 해 볼 것</h3><p class="next" id="next"></p></div>
+      </div>
+      <p class="fine">The AI checks whether the task was done, from the transcript. Speech recognition may tidy grammar, so grammar and clarity are judged by people.</p>
     </section>
-  </div>
 
-  <section class="panel">
-    <p class="label">Conversation transcript</p>
-    <p class="muted" style="margin:0 0 8px">The AI judges whether the task was done, from the transcript. Speech recognition may tidy up grammar and pronunciation, so grammar and clarity are judged by people, not the AI.</p>
-    <div id="calls" style="margin-bottom:10px">
-      <button class="act" id="loadCalls" type="button" style="background:#fff;color:var(--ink);border:1px solid var(--line)">Load recent calls</button>
-      <span id="callsMsg" style="color:var(--muted);font-size:13px;margin-left:8px">Pick a call to judge it — no pasting needed.</span>
-      <div id="callList" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:8px"></div>
-    </div>
-    <textarea id="tx" placeholder="Pick a call above, or paste a conversation here.&#10;Student: ...&#10;Partner: ..."></textarea>
-    <div class="err" id="err"></div>
-    <div class="row">
-      <button class="act" id="judge">Judge</button>
-      <button class="ghost act" id="clear">Clear</button>
-      <input id="pin" type="password" placeholder="Teacher PIN" autocomplete="off" style="font:inherit;font-size:14px;padding:8px 10px;border:1px solid var(--line);border-radius:8px;width:130px">
-      <span class="muted" id="status"></span>
-    </div>
-  </section>
-
-  <section class="panel" id="out" hidden>
-    <p class="label">AI judge result</p>
-    <div class="result" id="verdict"></div>
-    <p id="summary" style="font-size:16px;line-height:1.6;margin:0 0 16px"></p>
-    <p class="label">잘한 점</p>
-    <ul class="tips" id="strengths" style="margin-bottom:14px"></ul>
-    <p class="label">이렇게도 말할 수 있어요</p>
-    <ul class="tips" id="tips" style="margin-bottom:14px"></ul>
-    <p class="label">다음 대화에서 해 볼 것</p>
-    <p id="next" style="font-size:15px;line-height:1.6;margin:0"></p>
-    <p class="muted" id="runs" style="margin-top:14px"></p>
-  </section>
-</main>
-
+    <section class="panel">
+      <h2>Mission card</h2>
+      <p class="card-front" id="front"></p>
+      <div class="card-grid">
+        <div><h2 class="muted" style="font-size:13px;font-weight:600;margin:0 0 var(--s2)" id="optLabel"></h2><ul id="opts"></ul></div>
+        <div><h2 class="muted" style="font-size:13px;font-weight:600;margin:0 0 var(--s2)" id="condLabel"></h2><p style="margin:0;font-size:16px" id="cond"></p></div>
+      </div>
+      <div id="annBox" class="sec"><h2>Announcement</h2><div class="ann" id="ann"></div></div>
+    </section>
+  </main>
+</div>
+<script src="/shell.js"></script>
 <script>
 const CARDS = [
  {
@@ -439,87 +439,117 @@ const CARDS = [
  }
 ];
 
-let cur = 0, sample = null;
 const $ = id => document.getElementById(id);
+const esc = s => String(s||"").replace(/[&<>"]/g, ch => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[ch]));
+let cur = Shell.startIndex(CARDS.length), busy = false;
+
+function say(msg, isErr) { const s = $("callsMsg"); s.textContent = msg || ""; s.classList.toggle("err", !!isErr); }
+function resetResult() {
+  $("out").hidden = true; $("fb").hidden = true; $("heard").checked = false;
+  [...$("check").children].forEach(li => { li.classList.remove("yes","no"); li.querySelectorAll(".fb").forEach(x => x.remove()); });
+}
 
 function render() {
-  const c = CARDS[cur], att = c.type === "attendant";
-  const TY = {attendant:["Ask for directions","#2f6fde","#e8f0fd"], chat:["Phone call","#1f9d74","#e3f5ee"], order:["Ordering food","#e0672b","#fdeee5"]};
-  $("tabs").innerHTML = CARDS.map((k,i)=>`<button class="${i===cur?'on':''}" data-i="${i}"><span class="n" style="background:${TY[k.type][1]}">${i+1}</span>${k.title.split('. ').slice(1).join('. ')}</button>`).join("");
-  $("badge").textContent = TY[c.type][0]; $("badge").style.cssText = `color:${TY[c.type][1]};background:${TY[c.type][2]}`;
-  $("fictional").innerHTML = c.fictional ? '<span class="tag">Classroom scenario</span>' : "";
+  const c = CARDS[cur], att = c.type === "attendant", T = Shell.TYPES[c.type];
+  Shell.render($("tabs"), CARDS, cur);
+  document.title = `AI judge · ${Shell.clean(c.title)}`;
+  $("title").textContent = Shell.clean(c.title);
+  $("meta").innerHTML = `<span class="type" style="color:${T.color}">${T.name}</span><span aria-hidden="true">·</span><span>Mission ${cur+1} of ${CARDS.length}</span>` + (c.fictional ? '<span class="tag">classroom scenario</span>' : "");
   $("front").textContent = c.front;
   $("annBox").hidden = !att; $("ann").textContent = c.ann || "";
   $("optLabel").textContent = att ? "Choose one" : "Try to";
   $("condLabel").textContent = att ? "Your situation" : (c.type === "order" ? "Remember" : "Your goal");
-  $("opts").innerHTML = att ? c.routes.map((o,i)=>`<li><b>${"AB"[i]}.</b> ${o[0]} <span class="muted">(${o[1]})</span></li>`).join("")
+  $("opts").innerHTML = att ? c.routes.map((o,i)=>`<li><b>${"AB"[i]}.</b> ${esc(o[0])} <span class="muted">(${esc(o[1])})</span></li>`).join("")
                             : c.options.map(o=>`<li>${esc(o)}</li>`).join("");
   $("cond").textContent = c.condition;
   $("check").innerHTML = c.items.map(it => {
-    const ans = att && it[2] !== undefined && it[2] !== "" ? `A: ${it[1]}<br>B: ${it[2]}` : esc(it[1] || "");
+    const ans = att && it[2] !== undefined && it[2] !== "" ? `A: ${esc(it[1])}<br>B: ${esc(it[2])}` : esc(it[1] || "");
     return `<li><div><div>${esc(it[0])}</div>${ans ? `<div class="ans">${ans}</div>` : ""}</div></li>`;
   }).join("");
-  $("out").hidden = true; $("err").textContent = ""; $("status").textContent = ""; $("heard").checked = false;
+  resetResult(); $("tx").value = ""; $("callList").innerHTML = ""; say("");
 }
-$("tabs").addEventListener("click", e => { const b = e.target.closest("button"); if (!b) return; cur = +b.dataset.i; render(); $("callList").innerHTML=""; if ($("pin").value.trim()) loadCalls(); });
-$("toggleAns").addEventListener("click", () => { const p = $("checkPanel"); p.classList.toggle("show-ans"); $("toggleAns").textContent = p.classList.contains("show-ans") ? "Hide answers" : "Show answers"; });
-$("clear").addEventListener("click", () => { $("tx").value = ""; $("out").hidden = true; $("err").textContent = ""; render(); });
-$("tx").addEventListener("input", () => { $("err").textContent = ""; });
 
-$("judge").addEventListener("click", async () => {
-  const tx = $("tx").value.trim();
-  if (!tx) { $("err").textContent = "Paste the conversation first."; return; }
-  if (!$("pin").value.trim()) { $("err").textContent = "Enter the teacher PIN first."; return; }
-  const c = CARDS[cur];
-  $("judge").disabled = true; $("status").textContent = "Judging…";
+async function post(url, body) {
+  const pin = $("pin").value.trim();
+  if (!pin) { const e = new Error("Enter the teacher PIN at the top right first."); $("pin").focus(); throw e; }
+  try { localStorage.setItem("judgePin", pin); } catch {}
+  const r = await fetch(url, { method:"POST", headers:{ "Content-Type":"application/json" }, body: JSON.stringify({ ...body, pin, mission: cur }) });
+  const j = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error({ pin:"Wrong teacher PIN.", not_configured:"This feature is not set up yet (API key missing)." }[j.error] || "Something went wrong. Try again.");
+  return j;
+}
+
+async function loadCalls() {
+  const list = $("callList"); list.innerHTML = "";
+  say("Loading calls…");
   try {
-    const pin = $("pin").value.trim();
-    try { localStorage.setItem("judgePin", pin); } catch {}
-    const resp = await fetch("/api/judge", { method:"POST", headers:{ "Content-Type":"application/json" }, body: JSON.stringify({ mission: cur, transcript: tx, pin }) });
-    const r = await resp.json();
-    if (!resp.ok) { const m = { pin:"Wrong teacher PIN.", not_configured:"The judge is not set up yet (API key or PIN missing)." }[r.error]; const er = new Error(m || "The judge could not answer. Try again."); er.shown = true; throw er; }
+    const { sessions } = await post("/api/sessions", {});
+    if (!sessions.length) { say("No calls for this mission yet. When a student finishes a call, press Refresh."); return; }
+    say("Newest first. Pick one to judge it.");
+    sessions.forEach((s, i) => {
+      const b = document.createElement("button"); b.type = "button"; b.className = "call";
+      const t = s.started ? new Date(s.started) : null;
+      const day = t && t.toDateString() !== new Date().toDateString() ? t.toLocaleDateString([], { month:"short", day:"numeric" }) + " " : "";
+      const dur = s.seconds ? `${Math.floor(s.seconds/60)}:${String(Math.round(s.seconds%60)).padStart(2,"0")}` : "";
+      b.innerHTML = `<span>${t ? day + t.toLocaleTimeString([], { hour:"2-digit", minute:"2-digit" }) : "?"}</span><span class="d">${dur}</span>` +
+        (s.status === "active" ? '<span class="new">live</span>' : i === 0 ? '<span class="new">latest</span>' : "");
+      b.onclick = () => pickCall(s, b);
+      list.appendChild(b);
+    });
+  } catch (e) { say(e.message, true); }
+}
+
+async function pickCall(s, btn) {
+  if (busy) return;
+  [...$("callList").children].forEach(x => x.classList.toggle("on", x === btn));
+  say("Loading the conversation…");
+  try {
+    const { transcript } = await post("/api/sessions", { sessionId: s.id });
+    if (!transcript) { say("That call has no transcript.", true); return; }
+    $("tx").value = transcript;
+    await judge();
+  } catch (e) { say(e.message, true); }
+}
+
+async function judge() {
+  const tx = $("tx").value.trim(), c = CARDS[cur];
+  if (!tx) { say("Pick a call, or paste a conversation first.", true); return; }
+  busy = true; $("judge").disabled = true; resetResult();
+  say("Judging… the AI checks three times and takes the majority. This takes about 30 seconds.");
+  try {
+    const r = await post("/api/judge", { transcript: tx });
     const items = Array.isArray(r.items) ? r.items : [];
-    [...$("check").children].forEach((li,i)=>{ const it=items[i]||{}; li.classList.remove("yes","no"); li.classList.add(it.done ? "yes" : "no");
-      li.querySelectorAll(".fb").forEach(x=>x.remove());
-      const fb=document.createElement("div"); fb.className="fb";
-      fb.innerHTML=(it.evidence?`“${esc(it.evidence)}” — `:"")+esc(it.note||"")+(r.runs>1?` <span style="opacity:.7">(${it.votes}/${r.runs})</span>`:"");
-      li.firstElementChild.appendChild(fb); });
+    [...$("check").children].forEach((li,i) => {
+      const it = items[i] || {}; li.classList.add(it.done ? "yes" : "no");
+      const fb = document.createElement("div"); fb.className = "fb";
+      fb.innerHTML = (it.evidence ? `<q>${esc(it.evidence)}</q> — ` : "") + esc(it.note || "") + (r.runs > 1 ? ` <span class="v">${it.votes}/${r.runs}</span>` : "");
+      li.firstElementChild.appendChild(fb);
+    });
     const ok = r.result === "SUCCESS";
-    $("verdict").textContent = (ok ? "SUCCESS" : "NOT YET") + (c.type==="attendant" && r.choice ? `  ·  chose ${r.choice}` : "");
-    $("verdict").className = "result " + (ok ? "ok" : "no");
+    $("verdictRow").className = "verdict " + (ok ? "ok" : "no");
+    $("verdict").textContent = ok ? "Mission complete" : "Not yet";
+    $("runs").textContent = (c.type === "attendant" && r.choice ? `Chose ${r.choice} · ` : "") + `${items.filter(x => x.done).length} of ${c.items.length} done` + (r.runs > 1 ? ` · majority of ${r.runs} checks` : "");
     $("summary").textContent = r.summary || "";
     const arr = x => Array.isArray(x) ? x : [];
-    $("strengths").innerHTML = arr(r.strengths).map(t=>`<li><b>“${esc(t.quote)}”</b><br><span class="muted" style="font-size:14px">${esc(t.why)}</span></li>`).join("") || "<li>—</li>";
-    $("tips").innerHTML = arr(r.tips).map(t=>`<li>“${esc(t.original)}” → <b>“${esc(t.better)}”</b><br><span class="muted" style="font-size:14px">${esc(t.why)}</span></li>`).join("") || "<li>—</li>";
+    $("strengths").innerHTML = arr(r.strengths).map(t => `<li>“${esc(t.quote)}”<span class="why">${esc(t.why)}</span></li>`).join("") || "<li class='muted'>—</li>";
+    $("tips").innerHTML = arr(r.tips).map(t => `<li class="swap"><s>${esc(t.original)}</s> → <b>${esc(t.better)}</b><span class="why">${esc(t.why)}</span></li>`).join("") || "<li class='muted'>—</li>";
     $("next").textContent = r.next || "";
-    $("runs").textContent = r.runs ? `AI가 ${r.runs}번 판정해서 다수결로 정했어요. 괄호 안 숫자는 각 항목을 '달성'으로 본 횟수예요.` : "";
-    $("out").hidden = false; $("status").textContent = "";
-  } catch (e) {
-    $("status").textContent = "";
-    $("err").textContent = e && e.shown ? e.message : "The judge could not answer. Try again.";
-  } finally { $("judge").disabled = false; }
-});
-function esc(s){ return String(s||"").replace(/[&<>"]/g, ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[ch])); }
-
-render();
-try { $("pin").value = localStorage.getItem("judgePin") || ""; } catch {}
-async function api(body){ const r=await fetch("/api/sessions",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({...body,pin:$("pin").value.trim(),mission:cur})}); const j=await r.json().catch(()=>({})); if(!r.ok) throw new Error({pin:"Wrong teacher PIN.",not_configured:"Call history is not set up yet (Fish API key missing)."}[j.error]||"Could not load calls ("+(j.error||r.status)+")."); return j; }
-async function loadCalls(){
-  const list=$("callList"), msg=$("callsMsg"); list.innerHTML="";
-  if(!$("pin").value.trim()){ msg.textContent="Enter the teacher PIN first."; return; }
-  msg.textContent="Loading…";
-  try{
-    const {sessions}=await api({});
-    msg.textContent=sessions.length?"Newest first. Click one to judge it.":"No calls for this mission yet.";
-    sessions.forEach(s=>{ const b=document.createElement("button"); b.type="button"; b.className="act";
-      b.style.cssText="background:#fff;color:var(--ink);border:1px solid var(--line);font-size:13px;padding:6px 10px";
-      const t=s.started?new Date(s.started).toLocaleTimeString([], {hour:"2-digit",minute:"2-digit"}):"?";
-      b.textContent=t+(s.seconds?" · "+Math.floor(s.seconds/60)+"m "+Math.round(s.seconds%60)+"s":"")+(s.status==="active"?" · live":"");
-      b.onclick=async()=>{ msg.textContent="Loading the conversation…"; try{ const {transcript}=await api({sessionId:s.id}); if(!transcript){msg.textContent="That call has no transcript.";return;} $("tx").value=transcript; msg.textContent="Loaded. Judging…"; $("judge").click(); }catch(e){ msg.textContent=e.message; } };
-      list.appendChild(b); });
-  }catch(e){ msg.textContent=e.message; }
+    $("out").hidden = false; $("fb").hidden = false; say("");
+    $("checkPanel").scrollIntoView({ behavior:"smooth", block:"start" });
+  } catch (e) { say(e.message, true); }
+  finally { busy = false; $("judge").disabled = false; }
 }
+
+$("tabs").addEventListener("click", e => { const b = e.target.closest("button"); if (!b) return; cur = +b.dataset.i; render(); if ($("pin").value.trim()) loadCalls(); });
+$("toggleAns").addEventListener("click", () => { const p = $("checkPanel"); p.classList.toggle("show-ans"); $("toggleAns").textContent = p.classList.contains("show-ans") ? "Hide answers" : "Show answers"; });
+$("clear").addEventListener("click", () => { $("tx").value = ""; resetResult(); say(""); });
+$("judge").addEventListener("click", judge);
 $("loadCalls").addEventListener("click", loadCalls);
+$("pin").addEventListener("change", () => { if ($("pin").value.trim()) loadCalls(); });
+
+try { $("pin").value = localStorage.getItem("judgePin") || ""; } catch {}
+render();
+if ($("pin").value.trim()) loadCalls(); else say("Enter the teacher PIN at the top right to see recent calls.");
 </script>
 </body>
 </html>
