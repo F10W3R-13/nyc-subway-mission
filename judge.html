@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Speaking Missions · Judge</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root { --ink:#1d1f24; --muted:#6b6f78; --line:#e3e5e9; --bg:#f7f7f5; --card:#fff; --accent:#3d5afe; --ok:#1f7a4d; --okbg:#e6f4ec; --no:#b3261e; --nobg:#fbe9e7; }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:Inter, system-ui, sans-serif; color:var(--ink); background:var(--bg); }
+  header { max-width:1100px; margin:0 auto; padding:28px 24px 0; }
+  header h1 { margin:0; font-size:26px; font-weight:700; letter-spacing:-.01em; }
+  header p { margin:6px 0 0; color:var(--muted); font-size:15px; }
+  .tabs button .n { display:inline-grid; place-items:center; width:20px; height:20px; border-radius:50%; color:#fff; font-size:11px; font-weight:600; margin-right:6px; }
+  .badge { display:inline-block; font-size:13px; font-weight:600; padding:4px 10px; border-radius:999px; margin:0 0 10px; }
+  main { max-width:1100px; margin:0 auto; padding:20px 24px 48px; display:grid; gap:20px; }
+  .tabs { display:flex; flex-wrap:wrap; gap:8px; }
+  .tabs button { border:1px solid var(--line); background:var(--card); padding:8px 14px; border-radius:999px; font:inherit; font-size:14px; cursor:pointer; }
+  .tabs button.on { background:var(--ink); color:#fff; border-color:var(--ink); }
+  .panel { background:var(--card); border:1px solid var(--line); border-radius:16px; box-shadow:0 1px 3px rgba(0,0,0,.04); padding:20px 24px; }
+  .grid { display:grid; grid-template-columns: 1.3fr 1fr; gap:20px; }
+  @media (max-width:820px) { .grid { grid-template-columns:1fr; } }
+  .label { font-size:12px; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); margin:0 0 6px; }
+  .front { font-size:22px; line-height:1.45; margin:0 0 16px; }
+  .ann { background:#111; color:#f2f2f2; border-radius:10px; padding:14px 16px; font-size:15px; line-height:1.5; }
+  ol.check { margin:0; padding:0; list-style:none; display:grid; gap:10px; counter-reset:c; }
+  ol.check li { counter-increment:c; display:flex; gap:12px; align-items:flex-start; font-size:17px; padding:10px 12px; border:1px solid var(--line); border-radius:10px; }
+  ol.check li::before { content:counter(c); flex:none; width:26px; height:26px; border-radius:50%; background:var(--bg); display:grid; place-items:center; font-size:13px; font-weight:600; }
+  ol.check li.yes { background:var(--okbg); border-color:#b7dfc8; }
+  ol.check li.no { background:var(--nobg); border-color:#f3c3bd; }
+  .ans { color:var(--muted); font-size:14px; display:none; }
+  .show-ans .ans { display:block; }
+  .row { display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+  button.act { font:inherit; font-size:14px; padding:9px 16px; border-radius:8px; border:1px solid var(--ink); background:var(--ink); color:#fff; cursor:pointer; }
+  button.ghost { background:#fff; color:var(--ink); border-color:var(--line); }
+  button:disabled { opacity:.5; cursor:default; }
+  textarea { width:100%; min-height:170px; font:inherit; font-size:14px; line-height:1.5; padding:12px; border:1px solid var(--line); border-radius:10px; resize:vertical; }
+  .err { color:var(--no); font-size:13px; min-height:18px; }
+  .result { font-size:28px; font-weight:600; margin:4px 0 12px; }
+  .result.ok { color:var(--ok); } .result.no { color:var(--no); }
+  .tips { margin:0; padding-left:18px; line-height:1.6; }
+  .tag { font-size:12px; padding:2px 8px; border-radius:999px; background:#fff4d6; color:#7a5300; margin-left:8px; vertical-align:middle; }
+  .muted { color:var(--muted); font-size:13px; }
+  .human { display:flex; gap:10px; align-items:center; font-size:16px; padding:10px 12px; border:1px dashed var(--line); border-radius:10px; cursor:pointer; }
+  .human input { width:18px; height:18px; }
+</style>
+</head>
+<body>
+<header><h1>Speaking Missions · Judge</h1><p>Paste a conversation, then let the AI check it against the mission checklist.</p></header>
+<main>
+  <div class="tabs" id="tabs"></div>
+
+  <div class="grid">
+    <section class="panel">
+      <div class="badge" id="badge"></div>
+      <p class="label">Mission card <span id="fictional"></span></p>
+      <p class="front" id="front"></p>
+      <p class="label" id="optLabel">Choose one</p>
+      <ul id="opts" style="margin:0 0 14px;padding-left:20px;font-size:18px;line-height:1.6"></ul>
+      <p class="label" id="condLabel">Your situation</p>
+      <p style="font-size:18px;margin:0 0 16px" id="cond"></p>
+      <div id="annBox"><p class="label">Announcement</p>
+      <div class="ann" id="ann"></div></div>
+    </section>
+    <section class="panel" id="checkPanel">
+      <p class="label">Checklist — AI judge (task, from the transcript)</p>
+      <ol class="check" id="check"></ol>
+      <p class="label" style="margin-top:16px">Class panel — judged by ear</p>
+      <label class="human"><input type="checkbox" id="heard"> Easy to understand without reading the transcript</label>
+      <div class="row" style="margin-top:14px">
+        <button class="ghost act" id="toggleAns">Show answers</button>
+      </div>
+    </section>
+  </div>
+
+  <section class="panel">
+    <p class="label">Conversation transcript</p>
+    <p class="muted" style="margin:0 0 8px">The AI judges whether the task was done, from the transcript. Speech recognition may tidy up grammar and pronunciation, so grammar and clarity are judged by people, not the AI.</p>
+    <textarea id="tx" placeholder="Paste the conversation from Fish Audio here.&#10;Student: ...&#10;Partner: ..."></textarea>
+    <div class="err" id="err"></div>
+    <div class="row">
+      <button class="act" id="judge">Judge</button>
+      <button class="ghost act" id="clear">Clear</button>
+      <input id="pin" type="password" placeholder="Teacher PIN" autocomplete="off" style="font:inherit;font-size:14px;padding:8px 10px;border:1px solid var(--line);border-radius:8px;width:130px">
+      <span class="muted" id="status"></span>
+    </div>
+  </section>
+
+  <section class="panel" id="out" hidden>
+    <p class="label">AI judge result</p>
+    <div class="result" id="verdict"></div>
+    <p class="label">Other ways to say it (for reference)</p>
+    <ul class="tips" id="tips"></ul>
+  </section>
+</main>
+
+<script>
+const CARDS = [
+ {
+  "type": "attendant",
+  "title": "1. Express skips a stop",
+  "front": "You are on an uptown A train at 42 St–Port Authority. Choose where you want to go, then ask the station attendant for help. Tell the attendant about your situation.",
+  "options": [
+   "American Museum of Natural History",
+   "Apollo Theater in Harlem"
+  ],
+  "routes": [
+   [
+    "American Museum of Natural History",
+    "81 St",
+    "get off at 59 St–Columbus Circle, take the uptown C (or B on weekdays) local, get off at 81 St"
+   ],
+   [
+    "Apollo Theater in Harlem",
+    "125 St",
+    "stay on this A express train and get off at 125 St"
+   ]
+  ],
+  "condition": "You are in a hurry.",
+  "start": "42 St–Port Authority, on an uptown A train",
+  "problem": "the A train runs express from 59 St to 125 St and skips every stop in between",
+  "ann": "“This is an uptown A express train to Inwood–207 Street. The next stop is 59 Street–Columbus Circle. After 59 Street, the next stop is 125 Street.”",
+  "fictional": false,
+  "items": [
+   [
+    "Said the destination and their situation",
+    "e.g. \"You are in a hurry.\"",
+    ""
+   ],
+   [
+    "Where to change",
+    "59 St–Columbus Circle",
+    "No change needed"
+   ],
+   [
+    "Which train",
+    "C (B also OK on weekdays)",
+    "Stay on the A"
+   ],
+   [
+    "Direction",
+    "Uptown",
+    "Uptown"
+   ],
+   [
+    "Where to get off",
+    "81 St",
+    "125 St"
+   ]
+  ],
+  "audio": "a1.mp3",
+  "agent": "d26e442b87bf4d2fa61e77e5c2571394"
+ },
+ {
+  "type": "attendant",
+  "title": "2. Station skipped (classroom scenario)",
+  "front": "You are on an uptown C train at 59 St–Columbus Circle. Choose where you want to go. Listen to the announcement, then ask the attendant for help.",
+  "options": [
+   "Strawberry Fields in Central Park",
+   "American Museum of Natural History"
+  ],
+  "routes": [
+   [
+    "Strawberry Fields in Central Park",
+    "72 St",
+    "uptown C trains skip 72 St; ride to 81 St, cross to the downtown C, and go back one stop to 72 St (or walk south from 81 St)"
+   ],
+   [
+    "American Museum of Natural History",
+    "81 St",
+    "not affected; stay on the C and get off at 81 St"
+   ]
+  ],
+  "condition": "You don't want to walk much.",
+  "start": "59 St–Columbus Circle, on an uptown C train",
+  "problem": "(classroom scenario) due to station work, uptown C trains skip 72 St; downtown trains still stop there",
+  "ann": "“Attention passengers: due to station work, uptown C trains will not stop at 72 Street.”",
+  "fictional": true,
+  "items": [
+   [
+    "Said the destination and their situation",
+    "e.g. \"You don't want to walk much.\"",
+    ""
+   ],
+   [
+    "Where to change",
+    "81 St (then take the train back)",
+    "No change needed"
+   ],
+   [
+    "Which train",
+    "C",
+    "C"
+   ],
+   [
+    "Direction",
+    "Downtown (from 81 St)",
+    "Uptown"
+   ],
+   [
+    "Where to get off",
+    "72 St",
+    "81 St"
+   ]
+  ],
+  "audio": "a4.mp3",
+  "agent": "e4830977e8cd451faa1b753adaf6e813"
+ },
+ {
+  "type": "chat",
+  "title": "3. Phone call: How's New York?",
+  "front": "Your friend Emma from Chicago is calling you. She wants to hear about your trip to New York.",
+  "options": [
+   "Tell her about one place you visited and how it was.",
+   "Tell her about one food you tried and what you thought."
+  ],
+  "condition": "Answer with details, not just yes or no.",
+  "friend": "Emma",
+  "items": [
+   [
+    "Answered with details or reasons, not just yes or no",
+    "e.g. \"It was amazing because...\""
+   ],
+   [
+    "Reacted to what the friend said",
+    "e.g. \"Oh, really?\", \"That sounds fun!\""
+   ],
+   [
+    "Asked the friend at least one question back",
+    "e.g. \"How about you?\""
+   ],
+   [
+    "Tell her about one place you visited and how it was.",
+    ""
+   ],
+   [
+    "Tell her about one food you tried and what you thought.",
+    ""
+   ]
+  ],
+  "agent": "9b3af95cbea7486b99a34a6f3030f2d5"
+ },
+ {
+  "type": "chat",
+  "title": "4. Phone call: Let's hang out!",
+  "front": "Your friend Maya lives in New York. She is calling to make plans to meet you.",
+  "options": [
+   "You really want Korean food. Convince Maya, and give your reasons.",
+   "Agree on a day, a time, and a place to meet."
+  ],
+  "condition": "Answer with details, not just yes or no.",
+  "friend": "Maya",
+  "items": [
+   [
+    "Answered with details or reasons, not just yes or no",
+    "e.g. \"It was amazing because...\""
+   ],
+   [
+    "Reacted to what the friend said",
+    "e.g. \"Oh, really?\", \"That sounds fun!\""
+   ],
+   [
+    "Asked the friend at least one question back",
+    "e.g. \"How about you?\""
+   ],
+   [
+    "You really want Korean food. Convince Maya, and give your reasons.",
+    ""
+   ],
+   [
+    "Agree on a day, a time, and a place to meet.",
+    ""
+   ]
+  ],
+  "agent": "b9b4d41935a74fd8a11dfeefae2467aa"
+ },
+ {
+  "type": "order",
+  "title": "5. McDonald's drive-thru",
+  "agent": "a353ccbcc46743609b33bdd0294201c2",
+  "front": "You are on a road trip with a friend. You are at a McDonald's drive-thru. Order for both of you through the speaker.",
+  "options": [
+   "Your friend wants a McChicken meal with a Sprite.",
+   "Choose something for yourself from the menu."
+  ],
+  "condition": "You don't like pickles.",
+  "items": [
+   [
+    "Ordered the friend's McChicken meal with a Sprite",
+    ""
+   ],
+   [
+    "Ordered their own food clearly",
+    ""
+   ],
+   [
+    "Answered the crew's questions (meal, size, drink, sauce)",
+    ""
+   ],
+   [
+    "Asked for no pickles (if their food has pickles) or another change",
+    "e.g. \"No pickles, please.\""
+   ],
+   [
+    "Caught the mistake when the order was read back, and understood the total",
+    "The crew member makes one mistake on purpose."
+   ]
+  ],
+  "menu": [
+   [
+    "Big Mac",
+    "$6.49"
+   ],
+   [
+    "Quarter Pounder with Cheese",
+    "$6.79"
+   ],
+   [
+    "McChicken",
+    "$3.29"
+   ],
+   [
+    "10 pc Chicken McNuggets",
+    "$6.29"
+   ],
+   [
+    "Filet-O-Fish",
+    "$5.49"
+   ],
+   [
+    "Make it a meal (medium fries + medium drink)",
+    "+$4.00"
+   ],
+   [
+    "Fries  S / M / L",
+    "$2.49 / $3.49 / $4.29"
+   ],
+   [
+    "Drink (Coke, Diet Coke, Sprite, iced tea)  S / M / L",
+    "$1.79 / $2.29 / $2.79"
+   ],
+   [
+    "McFlurry with Oreo",
+    "$4.49"
+   ],
+   [
+    "Apple Pie",
+    "$1.79"
+   ]
+  ]
+ },
+ {
+  "type": "order",
+  "title": "6. McDonald's counter (something's sold out)",
+  "agent": "593137b8195f4afda7e33150587e4ab3",
+  "front": "You are at a busy McDonald's in Times Square. Order a meal and a dessert at the counter.",
+  "options": [
+   "Order a meal and a dessert.",
+   "Ask for one special thing (extra sauce, no ice, no onions…)."
+  ],
+  "condition": "If something isn't available, choose something else.",
+  "items": [
+   [
+    "Ordered a meal clearly (main, size, drink)",
+    ""
+   ],
+   [
+    "Asked for a dessert, and chose something else if it wasn't available",
+    "The ice cream machine is broken, so no McFlurry."
+   ],
+   [
+    "Made a special request",
+    "e.g. \"Can I get extra BBQ sauce?\""
+   ],
+   [
+    "Corrected the item the crew member misheard, and answered \"For here or to go?\"",
+    "The crew member mishears one item on purpose."
+   ],
+   [
+    "Understood the total and paid",
+    ""
+   ]
+  ],
+  "menu": [
+   [
+    "Big Mac",
+    "$6.49"
+   ],
+   [
+    "Quarter Pounder with Cheese",
+    "$6.79"
+   ],
+   [
+    "McChicken",
+    "$3.29"
+   ],
+   [
+    "10 pc Chicken McNuggets",
+    "$6.29"
+   ],
+   [
+    "Filet-O-Fish",
+    "$5.49"
+   ],
+   [
+    "Make it a meal (medium fries + medium drink)",
+    "+$4.00"
+   ],
+   [
+    "Fries  S / M / L",
+    "$2.49 / $3.49 / $4.29"
+   ],
+   [
+    "Drink (Coke, Diet Coke, Sprite, iced tea)  S / M / L",
+    "$1.79 / $2.29 / $2.79"
+   ],
+   [
+    "McFlurry with Oreo",
+    "$4.49"
+   ],
+   [
+    "Apple Pie",
+    "$1.79"
+   ]
+  ]
+ }
+];
+
+let cur = 0, sample = null;
+const $ = id => document.getElementById(id);
+
+function render() {
+  const c = CARDS[cur], att = c.type === "attendant";
+  const TY = {attendant:["Ask for directions","#2f6fde","#e8f0fd"], chat:["Phone call","#1f9d74","#e3f5ee"], order:["Ordering food","#e0672b","#fdeee5"]};
+  $("tabs").innerHTML = CARDS.map((k,i)=>`<button class="${i===cur?'on':''}" data-i="${i}"><span class="n" style="background:${TY[k.type][1]}">${i+1}</span>${k.title.split('. ').slice(1).join('. ')}</button>`).join("");
+  $("badge").textContent = TY[c.type][0]; $("badge").style.cssText = `color:${TY[c.type][1]};background:${TY[c.type][2]}`;
+  $("fictional").innerHTML = c.fictional ? '<span class="tag">Classroom scenario</span>' : "";
+  $("front").textContent = c.front;
+  $("annBox").hidden = !att; $("ann").textContent = c.ann || "";
+  $("optLabel").textContent = att ? "Choose one" : "Try to";
+  $("condLabel").textContent = att ? "Your situation" : (c.type === "order" ? "Remember" : "Your goal");
+  $("opts").innerHTML = att ? c.routes.map((o,i)=>`<li><b>${"AB"[i]}.</b> ${o[0]} <span class="muted">(${o[1]})</span></li>`).join("")
+                            : c.options.map(o=>`<li>${esc(o)}</li>`).join("");
+  $("cond").textContent = c.condition;
+  $("check").innerHTML = c.items.map(it => {
+    const ans = att && it[2] !== undefined && it[2] !== "" ? `A: ${it[1]}<br>B: ${it[2]}` : esc(it[1] || "");
+    return `<li><div><div>${esc(it[0])}</div>${ans ? `<div class="ans">${ans}</div>` : ""}</div></li>`;
+  }).join("");
+  $("out").hidden = true; $("err").textContent = ""; $("status").textContent = ""; $("heard").checked = false;
+}
+$("tabs").addEventListener("click", e => { const b = e.target.closest("button"); if (!b) return; cur = +b.dataset.i; render(); });
+$("toggleAns").addEventListener("click", () => { const p = $("checkPanel"); p.classList.toggle("show-ans"); $("toggleAns").textContent = p.classList.contains("show-ans") ? "Hide answers" : "Show answers"; });
+$("clear").addEventListener("click", () => { $("tx").value = ""; $("out").hidden = true; $("err").textContent = ""; render(); });
+$("tx").addEventListener("input", () => { $("err").textContent = ""; });
+
+$("judge").addEventListener("click", async () => {
+  const tx = $("tx").value.trim();
+  if (!tx) { $("err").textContent = "Paste the conversation first."; return; }
+  if (!$("pin").value.trim()) { $("err").textContent = "Enter the teacher PIN first."; return; }
+  const c = CARDS[cur];
+  $("judge").disabled = true; $("status").textContent = "Judging…";
+  try {
+    const pin = $("pin").value.trim();
+    try { localStorage.setItem("judgePin", pin); } catch {}
+    const resp = await fetch("/api/judge", { method:"POST", headers:{ "Content-Type":"application/json" }, body: JSON.stringify({ mission: cur, transcript: tx, pin }) });
+    const r = await resp.json();
+    if (!resp.ok) { const m = { pin:"Wrong teacher PIN.", not_configured:"The judge is not set up yet (API key or PIN missing)." }[r.error]; const er = new Error(m || "The judge could not answer. Try again."); er.shown = true; throw er; }
+    const items = Array.isArray(r.items) ? r.items : [];
+    [...$("check").children].forEach((li,i)=>{ li.classList.remove("yes","no"); li.classList.add(items[i] ? "yes" : "no"); });
+    const ok = r.result === "SUCCESS";
+    $("verdict").textContent = (ok ? "SUCCESS" : "NOT YET") + (c.type==="attendant" && r.choice ? `  ·  chose ${r.choice}` : "");
+    $("verdict").className = "result " + (ok ? "ok" : "no");
+    const tips = Array.isArray(r.tips) ? r.tips : [];
+    $("tips").innerHTML = tips.length ? tips.map(t=>`<li>“${esc(t.original)}” → <b>“${esc(t.better)}”</b></li>`).join("") : "<li>No suggestions this time.</li>";
+    $("out").hidden = false; $("status").textContent = "";
+  } catch (e) {
+    $("status").textContent = "";
+    $("err").textContent = e && e.shown ? e.message : "The judge could not answer. Try again.";
+  } finally { $("judge").disabled = false; }
+});
+function esc(s){ return String(s||"").replace(/[&<>"]/g, ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[ch])); }
+
+render();
+try { $("pin").value = localStorage.getItem("judgePin") || ""; } catch {}
+</script>
+</body>
+</html>
