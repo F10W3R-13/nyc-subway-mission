@@ -43,6 +43,7 @@
   .tag { font-size:12px; padding:2px 8px; border-radius:999px; background:#fff4d6; color:#7a5300; margin-left:8px; vertical-align:middle; }
   .muted { color:var(--muted); font-size:13px; }
   .human { display:flex; gap:10px; align-items:center; font-size:16px; padding:10px 12px; border:1px dashed var(--line); border-radius:10px; cursor:pointer; }
+  .fb { font-size:14px; color:var(--muted); margin-top:4px; line-height:1.5; }
   .human input { width:18px; height:18px; }
 </style>
 </head>
@@ -95,8 +96,14 @@
   <section class="panel" id="out" hidden>
     <p class="label">AI judge result</p>
     <div class="result" id="verdict"></div>
-    <p class="label">Other ways to say it (for reference)</p>
-    <ul class="tips" id="tips"></ul>
+    <p id="summary" style="font-size:16px;line-height:1.6;margin:0 0 16px"></p>
+    <p class="label">잘한 점</p>
+    <ul class="tips" id="strengths" style="margin-bottom:14px"></ul>
+    <p class="label">이렇게도 말할 수 있어요</p>
+    <ul class="tips" id="tips" style="margin-bottom:14px"></ul>
+    <p class="label">다음 대화에서 해 볼 것</p>
+    <p id="next" style="font-size:15px;line-height:1.6;margin:0"></p>
+    <p class="muted" id="runs" style="margin-top:14px"></p>
   </section>
 </main>
 
@@ -472,12 +479,20 @@ $("judge").addEventListener("click", async () => {
     const r = await resp.json();
     if (!resp.ok) { const m = { pin:"Wrong teacher PIN.", not_configured:"The judge is not set up yet (API key or PIN missing)." }[r.error]; const er = new Error(m || "The judge could not answer. Try again."); er.shown = true; throw er; }
     const items = Array.isArray(r.items) ? r.items : [];
-    [...$("check").children].forEach((li,i)=>{ li.classList.remove("yes","no"); li.classList.add(items[i] ? "yes" : "no"); });
+    [...$("check").children].forEach((li,i)=>{ const it=items[i]||{}; li.classList.remove("yes","no"); li.classList.add(it.done ? "yes" : "no");
+      li.querySelectorAll(".fb").forEach(x=>x.remove());
+      const fb=document.createElement("div"); fb.className="fb";
+      fb.innerHTML=(it.evidence?`“${esc(it.evidence)}” — `:"")+esc(it.note||"")+(r.runs>1?` <span style="opacity:.7">(${it.votes}/${r.runs})</span>`:"");
+      li.firstElementChild.appendChild(fb); });
     const ok = r.result === "SUCCESS";
     $("verdict").textContent = (ok ? "SUCCESS" : "NOT YET") + (c.type==="attendant" && r.choice ? `  ·  chose ${r.choice}` : "");
     $("verdict").className = "result " + (ok ? "ok" : "no");
-    const tips = Array.isArray(r.tips) ? r.tips : [];
-    $("tips").innerHTML = tips.length ? tips.map(t=>`<li>“${esc(t.original)}” → <b>“${esc(t.better)}”</b></li>`).join("") : "<li>No suggestions this time.</li>";
+    $("summary").textContent = r.summary || "";
+    const arr = x => Array.isArray(x) ? x : [];
+    $("strengths").innerHTML = arr(r.strengths).map(t=>`<li><b>“${esc(t.quote)}”</b><br><span class="muted" style="font-size:14px">${esc(t.why)}</span></li>`).join("") || "<li>—</li>";
+    $("tips").innerHTML = arr(r.tips).map(t=>`<li>“${esc(t.original)}” → <b>“${esc(t.better)}”</b><br><span class="muted" style="font-size:14px">${esc(t.why)}</span></li>`).join("") || "<li>—</li>";
+    $("next").textContent = r.next || "";
+    $("runs").textContent = r.runs ? `AI가 ${r.runs}번 판정해서 다수결로 정했어요. 괄호 안 숫자는 각 항목을 '달성'으로 본 횟수예요.` : "";
     $("out").hidden = false; $("status").textContent = "";
   } catch (e) {
     $("status").textContent = "";

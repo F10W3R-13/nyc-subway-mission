@@ -29,11 +29,16 @@ Conversation:
 ${tx}
 
 Tasks:
-1. For each of the ${c.items.length} checklist items, decide whether it was clearly reached. Ignore grammar. Accept other natural wording.
-2. result is "SUCCESS" if all items are reached, otherwise "NOT YET".
-3. The transcript comes from speech recognition, which may already fix small grammar errors, so do not point out grammar mistakes. Instead, pick at most two things the student said and show another natural way a native speaker might say them (a richer or more casual expression). Return an empty list if nothing fits.
+1. For each of the ${c.items.length} checklist items, decide whether it was clearly reached. Ignore grammar and accept any natural wording. Give the student's own words that show it (or "" if none) and a short reason in Korean.
+2. The transcript comes from speech recognition, which may already fix small grammar errors, so do not point out grammar mistakes.
+3. Write feedback for a Korean student who just finished high school, in friendly, encouraging Korean (English examples stay in English):
+   - summary: 2 sentences on how the conversation went overall.
+   - strengths: up to 2 things the student did well, each with the student's quote and why it worked.
+   - tips: up to 3 things the student said, each with a more natural way a native speaker might say it and a short Korean explanation of when or why to use it.
+   - next: one concrete thing to try in the next conversation, with an English example sentence.
 
-Return only JSON: {"choice":"A"|"B"|"","items":[true,false,...],"result":"SUCCESS"|"NOT YET","tips":[{"original":"...","better":"..."}]}`;
+Return only JSON:
+{"choice":"A"|"B"|"","items":[{"done":true,"evidence":"...","note":"..."}],"summary":"...","strengths":[{"quote":"...","why":"..."}],"tips":[{"original":"...","better":"...","why":"..."}],"next":"..."}`;
 }
 
 
@@ -47,7 +52,7 @@ async function callLLM(prompt) {
     const r = await fetch(url, {
       method: "POST",
       headers: { "Content-Type": "application/json", "Authorization": `Bearer ${process.env.OPENCODE_API_KEY}`, "x-opencode-session": session, "User-Agent": "speaking-missions-judge/1.0" },
-      body: JSON.stringify({ model: MODEL, temperature: 0.2, max_tokens: 32000, reasoning_effort: "low",
+      body: JSON.stringify({ model: MODEL, temperature: 0, max_tokens: 32000, reasoning_effort: "low",
         messages: [{ role: "system", content: "You are a fair English-speaking-task judge. Reply with JSON only." }, { role: "user", content: prompt }] })
     });
     if ([401, 402, 403, 404].includes(r.status)) { last = r.status; continue; }
@@ -71,6 +76,20 @@ module.exports = async (req, res) => {
   const c = MISSIONS[Number(mission)];
   const tx = String(transcript || "").slice(0, 8000).trim();
   if (!c || !tx) return res.status(400).json({ error: "input" });
-  try { res.status(200).json(await callLLM(buildPrompt(c, tx))); }
+  try {
+    const prompt = buildPrompt(c, tx), N = 3;
+    const runs = (await Promise.allSettled(Array.from({ length: N }, () => callLLM(prompt))))
+      .filter(x => x.status === "fulfilled" && Array.isArray(x.value.items)).map(x => x.value);
+    if (!runs.length) throw new Error("no_runs");
+    const done = r => c.items.map((_, i) => !!(r.items[i] && (r.items[i].done ?? r.items[i])));
+    const votes = c.items.map((_, i) => runs.filter(r => done(r)[i]).length);
+    const majority = votes.map(v => v * 2 > runs.length);
+    const ch = {}; runs.forEach(r => { ch[r.choice || ""] = (ch[r.choice || ""] || 0) + 1; });
+    const choice = Object.keys(ch).sort((x, y) => ch[y] - ch[x])[0];
+    const best = runs.map(r => ({ r, agree: done(r).filter((d, i) => d === majority[i]).length })).sort((x, y) => y.agree - x.agree)[0].r;
+    res.status(200).json({ ...best, choice, runs: runs.length,
+      items: c.items.map((_, i) => ({ ...(typeof best.items[i] === "object" ? best.items[i] : {}), done: majority[i], votes: votes[i] })),
+      result: majority.every(Boolean) ? "SUCCESS" : "NOT YET" });
+  }
   catch (e) { res.status(502).json({ error: String(e.message || e) }); }
 };
