@@ -148,7 +148,7 @@
   "title": "4. Phone call: Let's hang out!",
   "front": "Your friend Maya lives in New York. She is calling to make plans to meet you.",
   "options": [
-   "Tell her what you want to do or eat, and why.",
+   "You really want Korean food. Convince Maya, and give your reasons.",
    "Agree on a day, a time, and a place to meet."
   ],
   "condition": "Answer with details, not just yes or no.",
@@ -167,7 +167,7 @@
     "e.g. \"How about you?\""
    ],
    [
-    "Tell her what you want to do or eat, and why.",
+    "You really want Korean food. Convince Maya, and give your reasons.",
     ""
    ],
    [
@@ -205,8 +205,8 @@
     "e.g. \"No pickles, please.\""
    ],
    [
-    "Checked the order when it was read back and understood the total",
-    ""
+    "Caught the mistake when the order was read back, and understood the total",
+    "The crew member makes one mistake on purpose."
    ]
   ],
   "menu": [
@@ -276,8 +276,8 @@
     "e.g. \"Can I get extra BBQ sauce?\""
    ],
    [
-    "Answered \"For here or to go?\"",
-    ""
+    "Corrected the item the crew member misheard, and answered \"For here or to go?\"",
+    "The crew member mishears one item on purpose."
    ],
    [
     "Understood the total and paid",
