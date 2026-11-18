@@ -18,7 +18,7 @@ module.exports = async (req, res) => {
       const r = await fetch(`${FISH}?agent_id=${m.agent}&status=completed,active&page_size=15`, { headers: auth() });
       if (!r.ok) return res.status(502).json({ error: "fish_" + r.status });
       const j = await r.json();
-      return res.status(200).json({ sessions: (j.sessions || []).map(s => ({ id: s.session_id, status: s.status, started: s.started_at, seconds: s.duration_seconds })) });
+      return res.status(200).json({ sessions: (j.sessions || []).map(s => ({ id: s.session_id, status: s.status, started: s.started_at, seconds: s.duration_seconds, student: s.end_user_id || (s.metadata && s.metadata.student) || "" })) });
     }
     const r = await fetch(`${FISH}/${encodeURIComponent(b.sessionId)}`, { headers: auth() });
     if (!r.ok) return res.status(502).json({ error: "fish_" + r.status });

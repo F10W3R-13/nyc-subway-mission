@@ -18,8 +18,26 @@ audio{width:100%;display:block}
 .menu td{padding:8px 0;border-bottom:1px solid var(--line)}
 .menu tr:last-child td{border-bottom:0}
 .menu td:last-child{text-align:right;white-space:nowrap;color:var(--muted);padding-left:var(--s4)}
-.start{margin-top:var(--s4);display:flex;gap:var(--s3);align-items:center;color:var(--muted);font-size:14px}
-.start svg{flex:none;width:18px;height:18px;color:var(--tc)}
+.go{margin-top:var(--s5);padding-top:var(--s5);border-top:1px solid var(--line);display:grid;gap:var(--s3)}
+.go .who{display:flex;gap:var(--s3);align-items:center;flex-wrap:wrap}
+.go label{font-size:14px;font-weight:600}
+.go input{font:inherit;font-size:16px;padding:10px 12px;border:1px solid var(--line-2);border-radius:var(--r-s);width:min(240px,100%)}
+.go input:focus-visible{outline:2px solid var(--tc);outline-offset:1px}
+.call-btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:14px 18px;border:0;border-radius:var(--r);background:var(--tc);color:#fff;font-size:17px;font-weight:600;cursor:pointer;transition:filter .15s,transform .15s}
+.call-btn:hover{filter:brightness(.93)}
+.call-btn:active{transform:translateY(1px)}
+.call-btn:disabled{opacity:.45;cursor:default;filter:none}
+.call-btn svg{width:20px;height:20px}
+.call-btn.live{background:var(--ink)}
+.call-btn .dot{width:8px;height:8px;border-radius:50%;background:#ff5a4f;animation:pulse 1.4s ease-out infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(255,90,79,.6)}100%{box-shadow:0 0 0 10px rgba(255,90,79,0)}}
+@media (prefers-reduced-motion:reduce){.call-btn .dot{animation:none}}
+.go .note{margin:0;font-size:14px;color:var(--muted)}
+.done{display:flex;gap:var(--s3);align-items:center;justify-content:space-between;flex-wrap:wrap;background:var(--okbg);border:1px solid var(--okline);border-radius:var(--r);padding:var(--s3) var(--s4);color:var(--ok);font-weight:600}
+.done .acts{display:flex;gap:var(--s2)}
+.done button{font-size:14px;padding:7px 12px;border-radius:var(--r-s);border:1px solid var(--okline);background:#fff;color:var(--ink);cursor:pointer;font-weight:500}
+.done button.next{background:var(--ink);border-color:var(--ink);color:#fff}
+@media (max-width:560px){.menu tr{display:flex;flex-wrap:wrap;justify-content:space-between;column-gap:var(--s3);border-bottom:1px solid var(--line);padding:8px 0}.menu tr:last-child{border-bottom:0}.menu td{border:0;padding:0}.menu td:last-child{white-space:normal;padding-left:0;margin-left:auto}}
 .mission-wrap{min-width:0}
 @media (max-width:820px){.mission{padding:var(--s5)}.lead{font-size:18px}}
 </style></head><body>
@@ -34,11 +52,15 @@ audio{width:100%;display:block}
       <div class="head"><h1 id="title"></h1><p class="meta" id="meta"></p></div>
       <p class="lead" id="front"></p>
       <section class="sec" id="annBox"><h2>Listen first</h2><audio id="ann" controls preload="none"></audio></section>
-      <section class="sec" id="menuBox" hidden><h2>Menu</h2><table class="menu" id="menu"></table></section>
       <section class="sec"><h2 id="optLabel"></h2><div class="opts" id="opts"></div></section>
       <p class="cond"><strong id="condLabel"></strong><span id="cond"></span></p>
+      <div class="go" id="go">
+        <div class="who"><label for="who">Your name</label><input id="who" autocomplete="name" maxlength="40" placeholder="e.g. Minwoo"></div>
+        <button class="call-btn" id="callBtn" type="button"></button>
+        <p class="note" id="callNote" aria-live="polite"></p>
+      </div>
+      <section class="sec" id="menuBox" hidden><h2>Menu</h2><table class="menu" id="menu"></table></section>
     </article>
-    <p class="start"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><path d="M12 19v3"/></svg><span id="hint"></span></p>
   </main>
 </div>
 <div id="agentSlot"></div>
@@ -46,10 +68,11 @@ audio{width:100%;display:block}
 <script>
 const M = [{"type": "attendant", "title": "Express skips a stop", "front": "You are on an uptown A train at 42 St–Port Authority. Choose where you want to go, then ask the station attendant for help. Tell the attendant about your situation.", "options": ["American Museum of Natural History", "Apollo Theater in Harlem"], "condition": "You are in a hurry.", "fictional": false, "audio": "a1.mp3", "agent": "d26e442b87bf4d2fa61e77e5c2571394"}, {"type": "attendant", "title": "Station skipped (classroom scenario)", "front": "You are on an uptown C train at 59 St–Columbus Circle. Choose where you want to go. Listen to the announcement, then ask the attendant for help.", "options": ["Strawberry Fields in Central Park", "American Museum of Natural History"], "condition": "You don't want to walk much.", "fictional": true, "audio": "a4.mp3", "agent": "e4830977e8cd451faa1b753adaf6e813"}, {"type": "chat", "title": "Phone call: How's New York?", "front": "Your friend Emma from Chicago is calling you. She wants to hear about your trip to New York.", "options": ["Tell her about one place you visited and how it was.", "Tell her about one food you tried and what you thought."], "condition": "Answer with details, not just yes or no.", "agent": "9b3af95cbea7486b99a34a6f3030f2d5"}, {"type": "chat", "title": "Phone call: Let's hang out!", "front": "Your friend Maya lives in New York. She is calling to make plans to meet you.", "options": ["You really want Korean food. Convince Maya, and give your reasons.", "Agree on a day, a time, and a place to meet."], "condition": "Answer with details, not just yes or no.", "agent": "b9b4d41935a74fd8a11dfeefae2467aa"}, {"type": "order", "title": "McDonald's drive-thru", "agent": "a353ccbcc46743609b33bdd0294201c2", "front": "You are on a road trip with a friend. You are at a McDonald's drive-thru. Order for both of you through the speaker.", "options": ["Your friend wants a McChicken meal with a Sprite.", "Choose something for yourself from the menu."], "condition": "You don't like pickles.", "menu": [["Big Mac", "$6.49"], ["Quarter Pounder with Cheese", "$6.79"], ["McChicken", "$3.29"], ["10 pc Chicken McNuggets", "$6.29"], ["Filet-O-Fish", "$5.49"], ["Make it a meal (medium fries + medium drink)", "+$4.00"], ["Fries  S / M / L", "$2.49 / $3.49 / $4.29"], ["Drink (Coke, Diet Coke, Sprite, iced tea)  S / M / L", "$1.79 / $2.29 / $2.79"], ["McFlurry with Oreo", "$4.49"], ["Apple Pie", "$1.79"]]}, {"type": "order", "title": "McDonald's counter (something's sold out)", "agent": "593137b8195f4afda7e33150587e4ab3", "front": "You are at a busy McDonald's in Times Square. Order a meal and a dessert at the counter.", "options": ["Order a meal and a dessert.", "Ask for one special thing (extra sauce, no ice, no onions…)."], "condition": "If something isn't available, choose something else.", "menu": [["Big Mac", "$6.49"], ["Quarter Pounder with Cheese", "$6.79"], ["McChicken", "$3.29"], ["10 pc Chicken McNuggets", "$6.29"], ["Filet-O-Fish", "$5.49"], ["Make it a meal (medium fries + medium drink)", "+$4.00"], ["Fries  S / M / L", "$2.49 / $3.49 / $4.29"], ["Drink (Coke, Diet Coke, Sprite, iced tea)  S / M / L", "$1.79 / $2.29 / $2.79"], ["McFlurry with Oreo", "$4.49"], ["Apple Pie", "$1.79"]]}];
 const COPY = {
-  attendant:{opt:"Choose one", cond:"Your situation", hint:"Tap the button at the bottom right to talk to the station attendant."},
-  chat:{opt:"Try to", cond:"Your goal", hint:"Tap the button at the bottom right to answer the call."},
-  order:{opt:"Try to", cond:"Remember", hint:"Tap the button at the bottom right to start ordering."}
+  attendant:{opt:"Choose one", cond:"Your situation", start:"Talk to the station attendant"},
+  chat:{opt:"Your tasks", cond:"Your goal", start:"Answer the call"},
+  order:{opt:"Your tasks", cond:"Remember", start:"Start ordering"}
 };
+const MIC = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><path d="M12 19v3"/></svg>';
 const CHECK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>';
 const $ = id => document.getElementById(id);
 const esc = s => String(s||"").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
@@ -65,12 +88,46 @@ function render(){
   if (att) a.src = `https://cdn.jsdelivr.net/gh/F10W3R-13/nyc-subway-mission@main/audio/${m.audio}`; else { a.pause(); a.removeAttribute("src"); }
   $("front").textContent = m.front;
   $("menuBox").hidden = !m.menu; if (m.menu) $("menu").innerHTML = m.menu.map(([n,p]) => `<tr><td>${esc(n)}</td><td>${esc(p)}</td></tr>`).join("");
-  $("optLabel").textContent = C.opt; $("condLabel").textContent = C.cond; $("hint").textContent = C.hint;
+  $("optLabel").textContent = C.opt; $("condLabel").textContent = C.cond;
   $("opts").innerHTML = m.options.map((o,i) => `<div class="opt"><span class="k">${att ? "AB"[i] : CHECK}</span><span>${esc(o)}</span></div>`).join("");
   $("cond").textContent = m.condition;
   const slot = $("agentSlot"); slot.innerHTML = "";
-  const el = document.createElement("fish-agent"); el.setAttribute("agent-id", m.agent); slot.appendChild(el);
+  agent = document.createElement("fish-agent"); agent.setAttribute("agent-id", m.agent); slot.appendChild(agent);
+  agent.addEventListener("fish-agent:call", e => {
+    const name = studentName();
+    if (e.detail && e.detail.options && name) { e.detail.options.endUserId = name; e.detail.options.metadata = { ...(e.detail.options.metadata || {}), student: name, mission: cur + 1 }; }
+    setState("connecting");
+  });
+  agent.addEventListener("fish-agent:connect", () => setState("live"));
+  agent.addEventListener("fish-agent:disconnect", () => setState(state === "connecting" ? "idle" : "done"));
+  agent.addEventListener("fish-agent:error", () => setState("error"));
+  setState("idle");
 }
+let agent = null, state = "idle";
+const studentName = () => $("who").value.trim();
+function setState(s) {
+  state = s;
+  const C = COPY[M[cur].type], btn = $("callBtn"), note = $("callNote"), named = !!studentName();
+  $("go").querySelector(".done")?.remove();
+  btn.hidden = s === "done"; btn.disabled = !named && s === "idle"; btn.classList.toggle("live", s === "live" || s === "connecting");
+  if (s === "idle") { btn.innerHTML = MIC + C.start; note.textContent = named ? "Your partner's window will open. Allow the microphone when asked." : "Type your name first, so your teacher can find your call."; }
+  if (s === "connecting") { btn.innerHTML = '<span class="dot"></span>Connecting…'; note.textContent = "Allow the microphone if your browser asks."; }
+  if (s === "live") { btn.innerHTML = '<span class="dot"></span>On the call'; note.textContent = "Speak naturally. Hang up in the call window when you are finished."; }
+  if (s === "error") { btn.innerHTML = MIC + "Try again"; btn.disabled = false; note.textContent = "The call could not start. Check your microphone and internet, then try again."; }
+  if (s === "done") {
+    note.textContent = "";
+    const d = document.createElement("div"); d.className = "done";
+    d.innerHTML = `<span>Call finished. Nice work!</span><span class="acts"><button type="button" data-a="again">Try again</button>${cur < M.length - 1 ? '<button type="button" class="next" data-a="next">Next mission →</button>' : ""}</span>`;
+    d.addEventListener("click", e => { const a = e.target.dataset.a; if (a === "again") setState("idle"); if (a === "next") { cur++; render(); window.scrollTo({ top: 0, behavior: "smooth" }); } });
+    $("go").insertBefore(d, note);
+  }
+}
+$("who").addEventListener("input", () => { try { localStorage.setItem("studentName", studentName()); } catch {} if (state === "idle") setState("idle"); });
+$("callBtn").addEventListener("click", () => {
+  if (!studentName()) { $("who").focus(); return; }
+  if (state === "idle" || state === "error") (agent || document).dispatchEvent(new CustomEvent("fish-agent:expand", { bubbles: true, composed: true }));
+});
+try { $("who").value = localStorage.getItem("studentName") || ""; } catch {}
 $("nav").addEventListener("click", e => { const b = e.target.closest("button"); if (!b) return; cur = +b.dataset.i; render(); window.scrollTo({top:0, behavior:"smooth"}); });
 render();
 </script>

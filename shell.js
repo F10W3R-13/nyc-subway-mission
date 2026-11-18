@@ -19,7 +19,9 @@ window.Shell = (() => {
     const u = new URL(location.href); u.searchParams.set("m", cur + 1); history.replaceState(null, "", u);
     document.querySelectorAll(".switch a").forEach(a => { const h = new URL(a.href); h.searchParams.set("m", cur + 1); a.href = h.pathname + h.search; });
     const on = navEl.querySelector('[aria-current="true"]');
-    if (on && getComputedStyle(navEl).display === "flex") on.scrollIntoView({ block: "nearest", inline: "nearest" });
+    if (on && getComputedStyle(navEl).display === "flex") requestAnimationFrame(() => {
+      navEl.scrollLeft = on.offsetLeft - navEl.offsetLeft - (navEl.clientWidth - on.offsetWidth) / 2;
+    });
   }
   return { TYPES, clean, startIndex, render };
 })();
