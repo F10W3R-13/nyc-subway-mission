@@ -50,7 +50,7 @@ async function callLLM(prompt) {
         messages: [{ role: "system", content: "You are a fair English-speaking-task judge. Reply with JSON only." }, { role: "user", content: prompt }] })
     });
     if ([401, 402, 403, 404].includes(r.status)) { last = r.status; continue; }
-    if (!r.ok) throw new Error("llm_" + r.status);
+    if (!r.ok) { const t = await r.text(); throw new Error("llm_" + r.status + " " + t.slice(0, 300)); }
     const j = await r.json();
     const text = (j.choices && j.choices[0] && j.choices[0].message && j.choices[0].message.content) || "";
     const m = text.match(/\{[\s\S]*\}/);
