@@ -1,59 +1,86 @@
 <!DOCTYPE html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>NYC Travel Missions</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<title>Speaking Missions</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-:root{--ink:#1d1f24;--muted:#6b6f78;--line:#e3e5e9;--bg:#f6f7f9;--accent:#0039a6;--fish-accent:#0039a6}
-*{box-sizing:border-box}body{margin:0;font-family:Inter,system-ui,sans-serif;color:var(--ink);background:var(--bg)}
-header{background:var(--accent);color:#fff;padding:16px 24px;display:flex;align-items:center;gap:12px}
-header .dot{width:30px;height:30px;border-radius:50%;background:#fff;color:var(--accent);display:grid;place-items:center;font-weight:600}
-header h1{margin:0;font-size:19px;font-weight:600}
-main{max-width:900px;margin:0 auto;padding:22px 24px 120px;display:grid;gap:18px}
-.tabs{display:flex;flex-wrap:wrap;gap:8px}
-.tabs button{border:1px solid var(--line);background:#fff;padding:8px 14px;border-radius:999px;font:inherit;font-size:14px;cursor:pointer}
-.tabs button.on{background:var(--ink);color:#fff;border-color:var(--ink)}
-.card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:24px 28px}
-.label{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin:0 0 6px}
-.front{font-size:22px;line-height:1.5;margin:0 0 20px}
-.opts{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:0 0 20px}
-.opt{border:1px solid var(--line);border-radius:10px;padding:14px 16px;font-size:18px}
-.opt b{color:var(--accent);margin-right:6px}
-.cond{font-size:19px;margin:0;padding:12px 16px;background:#fff7e0;border-radius:10px}
-.menu{width:100%;border-collapse:collapse;margin:0 0 20px;font-size:16px}.menu td{padding:6px 4px;border-bottom:1px solid var(--line)}.menu td:last-child{text-align:right;white-space:nowrap;color:var(--muted)}
-.hint{color:var(--muted);font-size:14px;text-align:center}
-@media(max-width:640px){.opts{grid-template-columns:1fr}}
+:root{--ink:#1f2328;--muted:#6a707a;--line:#e6e8ec;--bg:#f7f7f5;--card:#fff;--accent:#3d5afe;--fish-accent:#3d5afe;
+ --t-attendant:#2f6fde;--t-chat:#1f9d74;--t-order:#e0672b}
+*{box-sizing:border-box}
+body{margin:0;font-family:Inter,system-ui,sans-serif;color:var(--ink);background:var(--bg);-webkit-font-smoothing:antialiased}
+header{max-width:960px;margin:0 auto;padding:28px 24px 8px}
+header h1{margin:0;font-size:26px;font-weight:700;letter-spacing:-.01em}
+header p{margin:6px 0 0;color:var(--muted);font-size:15px}
+main{max-width:960px;margin:0 auto;padding:16px 24px 130px;display:grid;grid-template-columns:260px 1fr;gap:20px;align-items:start}
+nav{display:grid;gap:18px;position:sticky;top:16px}
+.group h2{margin:0 0 8px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);display:flex;align-items:center;gap:8px}
+.group h2 i{width:8px;height:8px;border-radius:50%;display:inline-block}
+.group button{display:flex;gap:10px;align-items:center;width:100%;text-align:left;border:1px solid transparent;background:none;padding:10px 12px;border-radius:10px;font:inherit;font-size:15px;color:var(--ink);cursor:pointer}
+.group button:hover{background:#eeefec}
+.group button.on{background:var(--card);border-color:var(--line);box-shadow:0 1px 2px rgba(0,0,0,.04);font-weight:600}
+.group button .n{flex:none;width:24px;height:24px;border-radius:50%;display:grid;place-items:center;font-size:12px;font-weight:600;color:#fff}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:28px 30px;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+.badge{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600;padding:5px 10px;border-radius:999px;margin:0 0 12px}
+.tag{font-size:12px;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:3px 8px;margin-left:6px}
+h3{margin:0 0 18px;font-size:24px;letter-spacing:-.01em}
+.label{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin:0 0 8px}
+.front{font-size:20px;line-height:1.55;margin:0 0 22px}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:0 0 22px}
+.opt{border:1px solid var(--line);border-radius:12px;padding:14px 16px;font-size:17px;line-height:1.45;display:flex;gap:10px}
+.opt b{flex:none;color:var(--tc)}
+.cond{font-size:18px;margin:0;padding:14px 16px;background:#fbf6e9;border-radius:12px}
+audio{width:100%;margin:0 0 22px}
+.menu{width:100%;border-collapse:collapse;margin:0 0 22px;font-size:15px}
+.menu td{padding:7px 2px;border-bottom:1px solid var(--line)}
+.menu td:last-child{text-align:right;white-space:nowrap;color:var(--muted)}
+.hint{color:var(--muted);font-size:14px;text-align:center;margin:14px 0 0}
+@media(max-width:760px){main{grid-template-columns:1fr}nav{position:static;grid-template-columns:1fr;gap:12px}.opts{grid-template-columns:1fr}.card{padding:22px 20px}h3{font-size:21px}.front{font-size:18px}}
 </style></head><body>
-<header><div class="dot">M</div><h1>NYC Travel Missions</h1></header>
+<header><h1>Speaking Missions</h1><p>Real-life English role-plays with an AI partner. Pick a mission, read the card, then start talking.</p></header>
 <main>
-<div class="tabs" id="tabs"></div>
-<section class="card">
-<div id="annBox"><p class="label">Announcement</p><audio id="ann" controls preload="none" style="width:100%;margin:0 0 20px"></audio></div>
+<nav id="nav"></nav>
+<div>
+<section class="card" id="card">
+<div class="badge" id="badge"></div>
+<h3 id="title"></h3>
+<div id="annBox"><p class="label">Listen first</p><audio id="ann" controls preload="none"></audio></div>
 <p class="label">Your mission</p><p class="front" id="front"></p>
 <div id="menuBox" hidden><p class="label">Menu</p><table class="menu" id="menu"></table></div>
-<p class="label" id="optLabel">Choose one</p><div class="opts" id="opts"></div>
-<p class="label" id="condLabel">Your situation</p><p class="cond" id="cond"></p>
+<p class="label" id="optLabel"></p><div class="opts" id="opts"></div>
+<p class="label" id="condLabel"></p><p class="cond" id="cond"></p>
 </section>
 <p class="hint" id="hint"></p>
+</div>
 </main>
 <div id="agentSlot"></div>
 <script>
-const M = [{"type": "attendant", "title": "1. Express skips a stop", "front": "You are on an uptown A train at 42 St–Port Authority. Choose where you want to go, then ask the station attendant for help. Tell the attendant about your situation.", "options": ["American Museum of Natural History", "Apollo Theater in Harlem"], "condition": "You are in a hurry.", "fictional": false, "audio": "a1.mp3", "agent": "d26e442b87bf4d2fa61e77e5c2571394"}, {"type": "attendant", "title": "2. Station skipped (classroom scenario)", "front": "You are on an uptown C train at 59 St–Columbus Circle. Choose where you want to go. Listen to the announcement, then ask the attendant for help.", "options": ["Strawberry Fields in Central Park", "American Museum of Natural History"], "condition": "You don't want to walk much.", "fictional": true, "audio": "a4.mp3", "agent": "e4830977e8cd451faa1b753adaf6e813"}, {"type": "chat", "title": "3. Phone call: How's New York?", "front": "Your friend Emma from Chicago is calling you. She wants to hear about your trip to New York.", "options": ["Tell her about one place you visited and how it was.", "Ask Emma one question back."], "condition": "Answer with details, not just yes or no.", "agent": "9b3af95cbea7486b99a34a6f3030f2d5"}, {"type": "chat", "title": "4. Phone call: Let's hang out!", "front": "Your friend Maya lives in New York. She is calling to make plans to meet you.", "options": ["Tell her what you want to do or eat, and why.", "Agree on a day, a time, and a place to meet."], "condition": "Answer with details, not just yes or no.", "agent": "b9b4d41935a74fd8a11dfeefae2467aa"}, {"type": "order", "title": "5. McDonald's drive-thru", "agent": "a353ccbcc46743609b33bdd0294201c2", "front": "You are on a road trip with a friend. You are at a McDonald's drive-thru. Order for both of you through the speaker.", "options": ["Your friend wants a McChicken meal with a Sprite.", "Choose something for yourself from the menu."], "condition": "You don't like pickles.", "menu": [["Big Mac", "$6.49"], ["Quarter Pounder with Cheese", "$6.79"], ["McChicken", "$3.29"], ["10 pc Chicken McNuggets", "$6.29"], ["Filet-O-Fish", "$5.49"], ["Make it a meal (medium fries + medium drink)", "+$4.00"], ["Fries  S / M / L", "$2.49 / $3.49 / $4.29"], ["Drink (Coke, Diet Coke, Sprite, iced tea)  S / M / L", "$1.79 / $2.29 / $2.79"], ["McFlurry with Oreo", "$4.49"], ["Apple Pie", "$1.79"]]}, {"type": "order", "title": "6. McDonald's counter (something's sold out)", "agent": "593137b8195f4afda7e33150587e4ab3", "front": "You are at a busy McDonald's in Times Square. Order a meal and a dessert at the counter.", "options": ["Order a meal and a dessert.", "Ask for one special thing (extra sauce, no ice, no onions…)."], "condition": "If something isn't available, choose something else.", "menu": [["Big Mac", "$6.49"], ["Quarter Pounder with Cheese", "$6.79"], ["McChicken", "$3.29"], ["10 pc Chicken McNuggets", "$6.29"], ["Filet-O-Fish", "$5.49"], ["Make it a meal (medium fries + medium drink)", "+$4.00"], ["Fries  S / M / L", "$2.49 / $3.49 / $4.29"], ["Drink (Coke, Diet Coke, Sprite, iced tea)  S / M / L", "$1.79 / $2.29 / $2.79"], ["McFlurry with Oreo", "$4.49"], ["Apple Pie", "$1.79"]]}];
-let cur=0;const $=id=>document.getElementById(id);
-function render(){
- const m=M[cur];
- $("tabs").innerHTML=M.map((k,i)=>`<button class="${i===cur?'on':''}" data-i="${i}">${k.title}</button>`).join("");
- $("front").textContent=m.front;
- const a=$("ann"); const att=m.type==="attendant";
- $("annBox").style.display=att?"":"none"; if(att) a.src=`https://cdn.jsdelivr.net/gh/F10W3R-13/nyc-subway-mission@main/audio/${m.audio}`; else {a.pause();a.removeAttribute("src");}
- $("menuBox").hidden=!m.menu; if(m.menu) $("menu").innerHTML=m.menu.map(([n,p])=>`<tr><td>${n}</td><td>${p}</td></tr>`).join("");
- $("optLabel").textContent=att?"Choose one":"Try to"; $("condLabel").textContent=att?"Your situation":(m.type==="order"?"Remember":"Your goal");
- $("hint").textContent={attendant:"Tap the button at the bottom right to talk to the station attendant.",chat:"Tap the button at the bottom right to answer the call.",order:"Tap the button at the bottom right to start ordering."}[m.type];
- $("opts").innerHTML=m.options.map((o,i)=>`<div class="opt"><b>${m.type==="attendant"?"AB"[i]:"•"}</b>${o}</div>`).join("");
- $("cond").textContent=m.condition;
- const slot=$("agentSlot");slot.innerHTML="";
- const el=document.createElement("fish-agent");el.setAttribute("agent-id",m.agent);slot.appendChild(el);
+const M = [{"type": "attendant", "title": "Express skips a stop", "front": "You are on an uptown A train at 42 St–Port Authority. Choose where you want to go, then ask the station attendant for help. Tell the attendant about your situation.", "options": ["American Museum of Natural History", "Apollo Theater in Harlem"], "condition": "You are in a hurry.", "fictional": false, "audio": "a1.mp3", "agent": "d26e442b87bf4d2fa61e77e5c2571394"}, {"type": "attendant", "title": "Station skipped (classroom scenario)", "front": "You are on an uptown C train at 59 St–Columbus Circle. Choose where you want to go. Listen to the announcement, then ask the attendant for help.", "options": ["Strawberry Fields in Central Park", "American Museum of Natural History"], "condition": "You don't want to walk much.", "fictional": true, "audio": "a4.mp3", "agent": "e4830977e8cd451faa1b753adaf6e813"}, {"type": "chat", "title": "Phone call: How's New York?", "front": "Your friend Emma from Chicago is calling you. She wants to hear about your trip to New York.", "options": ["Tell her about one place you visited and how it was.", "Ask Emma one question back."], "condition": "Answer with details, not just yes or no.", "agent": "9b3af95cbea7486b99a34a6f3030f2d5"}, {"type": "chat", "title": "Phone call: Let's hang out!", "front": "Your friend Maya lives in New York. She is calling to make plans to meet you.", "options": ["Tell her what you want to do or eat, and why.", "Agree on a day, a time, and a place to meet."], "condition": "Answer with details, not just yes or no.", "agent": "b9b4d41935a74fd8a11dfeefae2467aa"}, {"type": "order", "title": "McDonald's drive-thru", "agent": "a353ccbcc46743609b33bdd0294201c2", "front": "You are on a road trip with a friend. You are at a McDonald's drive-thru. Order for both of you through the speaker.", "options": ["Your friend wants a McChicken meal with a Sprite.", "Choose something for yourself from the menu."], "condition": "You don't like pickles.", "menu": [["Big Mac", "$6.49"], ["Quarter Pounder with Cheese", "$6.79"], ["McChicken", "$3.29"], ["10 pc Chicken McNuggets", "$6.29"], ["Filet-O-Fish", "$5.49"], ["Make it a meal (medium fries + medium drink)", "+$4.00"], ["Fries  S / M / L", "$2.49 / $3.49 / $4.29"], ["Drink (Coke, Diet Coke, Sprite, iced tea)  S / M / L", "$1.79 / $2.29 / $2.79"], ["McFlurry with Oreo", "$4.49"], ["Apple Pie", "$1.79"]]}, {"type": "order", "title": "McDonald's counter (something's sold out)", "agent": "593137b8195f4afda7e33150587e4ab3", "front": "You are at a busy McDonald's in Times Square. Order a meal and a dessert at the counter.", "options": ["Order a meal and a dessert.", "Ask for one special thing (extra sauce, no ice, no onions…)."], "condition": "If something isn't available, choose something else.", "menu": [["Big Mac", "$6.49"], ["Quarter Pounder with Cheese", "$6.79"], ["McChicken", "$3.29"], ["10 pc Chicken McNuggets", "$6.29"], ["Filet-O-Fish", "$5.49"], ["Make it a meal (medium fries + medium drink)", "+$4.00"], ["Fries  S / M / L", "$2.49 / $3.49 / $4.29"], ["Drink (Coke, Diet Coke, Sprite, iced tea)  S / M / L", "$1.79 / $2.29 / $2.79"], ["McFlurry with Oreo", "$4.49"], ["Apple Pie", "$1.79"]]}];
+const TYPES = {
+  attendant:{name:"Ask for directions", color:"var(--t-attendant)", bg:"#e8f0fd", opt:"Choose one", cond:"Your situation", hint:"Tap the button at the bottom right to talk to the station attendant."},
+  chat:{name:"Phone call", color:"var(--t-chat)", bg:"#e3f5ee", opt:"Try to", cond:"Your goal", hint:"Tap the button at the bottom right to answer the call."},
+  order:{name:"Ordering food", color:"var(--t-order)", bg:"#fdeee5", opt:"Try to", cond:"Remember", hint:"Tap the button at the bottom right to start ordering."}
+};
+let cur=0; const $=id=>document.getElementById(id);
+function nav(){
+  $("nav").innerHTML=Object.entries(TYPES).map(([t,T])=>`<div class="group"><h2><i style="background:${T.color}"></i>${T.name}</h2>`+
+    M.map((m,i)=>m.type!==t?"":`<button class="${i===cur?'on':''}" data-i="${i}"><span class="n" style="background:${T.color}">${i+1}</span>${m.title}</button>`).join("")+`</div>`).join("");
 }
-$("tabs").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;cur=+b.dataset.i;render();});
+function render(){
+  const m=M[cur], T=TYPES[m.type], att=m.type==="attendant";
+  nav();
+  $("card").style.setProperty("--tc",T.color);
+  $("badge").textContent=T.name; $("badge").style.cssText=`color:${T.color};background:${T.bg}`;
+  $("title").innerHTML=`${cur+1}. ${m.title}`+(m.fictional?'<span class="tag">classroom scenario</span>':"");
+  const a=$("ann"); $("annBox").hidden=!att;
+  if(att) a.src=`https://cdn.jsdelivr.net/gh/F10W3R-13/nyc-subway-mission@main/audio/${m.audio}`; else {a.pause();a.removeAttribute("src");}
+  $("front").textContent=m.front;
+  $("menuBox").hidden=!m.menu; if(m.menu) $("menu").innerHTML=m.menu.map(([n,p])=>`<tr><td>${n}</td><td>${p}</td></tr>`).join("");
+  $("optLabel").textContent=T.opt; $("condLabel").textContent=T.cond; $("hint").textContent=T.hint;
+  $("opts").innerHTML=m.options.map((o,i)=>`<div class="opt"><b>${att?"AB"[i]:"✓"}</b><span>${o}</span></div>`).join("");
+  $("cond").textContent=m.condition;
+  const slot=$("agentSlot");slot.innerHTML="";
+  const el=document.createElement("fish-agent");el.setAttribute("agent-id",m.agent);slot.appendChild(el);
+}
+$("nav").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;cur=+b.dataset.i;render();window.scrollTo({top:0,behavior:"smooth"});});
 render();
 </script>
 <script src="https://unpkg.com/@fishaudio/agent-widget-embed" async type="text/javascript"></script>
