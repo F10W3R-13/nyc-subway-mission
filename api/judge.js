@@ -49,7 +49,7 @@ async function callLLM(prompt) {
       body: JSON.stringify({ model: MODEL, temperature: 0.2, max_tokens: 800,
         messages: [{ role: "system", content: "You are a fair English-speaking-task judge. Reply with JSON only." }, { role: "user", content: prompt }] })
     });
-    if (r.status === 401 || r.status === 403 || r.status === 404) { last = r.status; continue; }
+    if ([401, 402, 403, 404].includes(r.status)) { last = r.status; continue; }
     if (!r.ok) throw new Error("llm_" + r.status);
     const j = await r.json();
     const text = (j.choices && j.choices[0] && j.choices[0].message && j.choices[0].message.content) || "";
