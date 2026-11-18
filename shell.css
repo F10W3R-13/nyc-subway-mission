@@ -58,6 +58,7 @@ button{font:inherit;color:inherit}
 .btn.ghost:hover{background:var(--hover)}
 .btn.small{padding:5px 10px;font-size:13px}
 .btn:disabled{opacity:.5;cursor:default}
+@media (pointer:coarse){.btn,.missions button,.switch a{min-height:44px}.switch a{display:inline-flex;align-items:center}}
 input.field{font:inherit;font-size:14px;padding:6px 10px;border:1px solid var(--line-2);border-radius:var(--r-s);background:var(--card);width:120px}
 
 @media (max-width:820px){
