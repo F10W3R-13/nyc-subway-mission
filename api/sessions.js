@@ -15,7 +15,8 @@ module.exports = async (req, res) => {
   if (!m || !m.agent) return res.status(400).json({ error: "input" });
   try {
     if (!b.sessionId) {
-      const r = await fetch(`${FISH}?agent_id=${m.agent}&status=completed,active&page_size=15`, { headers: auth() });
+      const since = b.since && !isNaN(Date.parse(b.since)) ? `&created_after=${encodeURIComponent(new Date(b.since).toISOString())}` : "";
+      const r = await fetch(`${FISH}?agent_id=${m.agent}&status=completed,active&page_size=30${since}`, { headers: auth() });
       if (!r.ok) return res.status(502).json({ error: "fish_" + r.status });
       const j = await r.json();
       return res.status(200).json({ sessions: (j.sessions || []).map(s => ({ id: s.session_id, status: s.status, started: s.started_at, seconds: s.duration_seconds, student: s.end_user_id || (s.metadata && s.metadata.student) || "" })) });
@@ -27,5 +28,5 @@ module.exports = async (req, res) => {
     const lines = (s.items || []).filter(i => i.type === "message" && i.content)
       .map(i => `${i.role === "user" ? "Student" : "Partner"}: ${i.content}`);
     res.status(200).json({ transcript: lines.join("\n"), status: s.status });
-  } catch (e) { res.status(502).json({ error: String(e.message || e) }); }
+  } catch (e) { console.error("sessions", e); res.status(502).json({ error: "fish" }); }
 };

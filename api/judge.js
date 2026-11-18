@@ -56,11 +56,11 @@ async function callLLM(prompt) {
         messages: [{ role: "system", content: "You are a fair English-speaking-task judge. Reply with JSON only." }, { role: "user", content: prompt }] })
     });
     if ([401, 402, 403, 404].includes(r.status)) { last = r.status; continue; }
-    if (!r.ok) { const t = await r.text(); throw new Error("llm_" + r.status + " " + t.slice(0, 300)); }
+    if (!r.ok) { console.error("llm", r.status, (await r.text()).slice(0, 300)); throw new Error("llm_" + r.status); }
     const j = await r.json();
     const text = (j.choices && j.choices[0] && j.choices[0].message && j.choices[0].message.content) || "";
     const m = text.match(/\{[\s\S]*\}/);
-    if (!m) throw new Error("bad_json " + JSON.stringify({ finish: j.choices && j.choices[0] && j.choices[0].finish_reason, content: text.slice(0, 200), keys: Object.keys((j.choices && j.choices[0] && j.choices[0].message) || {}), usage: j.usage }));
+    if (!m) throw new Error("bad_json");
     return JSON.parse(m[0]);
   }
   throw new Error("auth_" + last);
@@ -77,11 +77,15 @@ module.exports = async (req, res) => {
   const tx = String(transcript || "").slice(0, 8000).trim();
   if (!c || !tx) return res.status(400).json({ error: "input" });
   try {
-    const prompt = buildPrompt(c, tx), N = 3;
-    const runs = (await Promise.allSettled(Array.from({ length: N }, () => callLLM(prompt))))
+    const prompt = buildPrompt(c, tx);
+    const batch = async n => (await Promise.allSettled(Array.from({ length: n }, () => callLLM(prompt))))
       .filter(x => x.status === "fulfilled" && Array.isArray(x.value.items)).map(x => x.value);
-    if (!runs.length) throw new Error("no_runs");
     const done = r => c.items.map((_, i) => !!(r.items[i] && (r.items[i].done ?? r.items[i])));
+    // Two checks at once; a third only when they disagree on any item.
+    let runs = await batch(2);
+    const agree = runs.length === 2 && done(runs[0]).every((d, i) => d === done(runs[1])[i]);
+    if (!agree) runs = runs.concat(await batch(runs.length ? 1 : 2));
+    if (!runs.length) throw new Error("no_runs");
     const votes = c.items.map((_, i) => runs.filter(r => done(r)[i]).length);
     const majority = votes.map(v => v * 2 > runs.length);
     const ch = {}; runs.forEach(r => { ch[r.choice || ""] = (ch[r.choice || ""] || 0) + 1; });
@@ -91,5 +95,5 @@ module.exports = async (req, res) => {
       items: c.items.map((_, i) => ({ ...(typeof best.items[i] === "object" ? best.items[i] : {}), done: majority[i], votes: votes[i] })),
       result: majority.every(Boolean) ? "SUCCESS" : "NOT YET" });
   }
-  catch (e) { res.status(502).json({ error: String(e.message || e) }); }
+  catch (e) { console.error("judge", e); res.status(502).json({ error: "llm" }); }
 };

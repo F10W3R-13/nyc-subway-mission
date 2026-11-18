@@ -23,6 +23,7 @@
   .call .who{font-weight:600}
   .call .ear{font-size:11px;color:var(--muted);border:1px solid var(--line-2);border-radius:999px;padding:0 6px}
   .call:disabled{opacity:.5;cursor:default}
+  .linkish{border:0;background:none;padding:0;font:inherit;font-size:14px;color:var(--ink);text-decoration:underline;text-underline-offset:3px;cursor:pointer}
   @media (pointer:coarse){.call{min-height:44px}}
   #checkPanel.loading ol.check{opacity:.45}
   details.paste{margin-top:var(--s4);border-top:1px solid var(--line);padding-top:var(--s3)}
@@ -78,7 +79,7 @@
     <div class="head" style="margin-bottom:var(--s5)"><h1 id="title"></h1><p class="meta" id="meta"></p></div>
 
     <section class="panel">
-      <div class="ph"><h2>판정할 통화 고르기</h2><button class="btn ghost small" id="loadCalls" type="button">새로고침</button></div>
+      <div class="ph"><h2>판정할 통화 고르기</h2><div class="row" style="margin:0"><label class="muted" style="display:flex;gap:6px;align-items:center;cursor:pointer"><input type="checkbox" id="allDays"> 지난 통화도 보기</label><button class="btn ghost small" id="loadCalls" type="button">새로고침</button></div></div>
       <div class="calls" id="callList"></div>
       <div class="bar" id="bar" hidden><i></i></div>
       <p class="status" id="callsMsg" role="status" aria-live="polite"></p>
@@ -118,340 +119,11 @@
 </div>
 <script src="/shell.js"></script>
 <script>
-const CARDS = [
- {
-  "type": "attendant",
-  "title": "1. Express skips a stop",
-  "front": "You are on an uptown A train at 42 St–Port Authority. Choose where you want to go, then ask the station attendant for help. Tell the attendant about your situation.",
-  "options": [
-   "American Museum of Natural History",
-   "Apollo Theater in Harlem"
-  ],
-  "routes": [
-   [
-    "American Museum of Natural History",
-    "81 St",
-    "get off at 59 St–Columbus Circle, take the uptown C (or B on weekdays) local, get off at 81 St"
-   ],
-   [
-    "Apollo Theater in Harlem",
-    "125 St",
-    "stay on this A express train and get off at 125 St"
-   ]
-  ],
-  "condition": "You are in a hurry.",
-  "start": "42 St–Port Authority, on an uptown A train",
-  "problem": "the A train runs express from 59 St to 125 St and skips every stop in between",
-  "ann": "“This is an uptown A express train to Inwood–207 Street. The next stop is 59 Street–Columbus Circle. After 59 Street, the next stop is 125 Street.”",
-  "fictional": false,
-  "items": [
-   [
-    "Said the destination and their situation",
-    "e.g. \"You are in a hurry.\"",
-    ""
-   ],
-   [
-    "Where to change",
-    "59 St–Columbus Circle",
-    "No change needed"
-   ],
-   [
-    "Which train",
-    "C (B also OK on weekdays)",
-    "Stay on the A"
-   ],
-   [
-    "Direction",
-    "Uptown",
-    "Uptown"
-   ],
-   [
-    "Where to get off",
-    "81 St",
-    "125 St"
-   ]
-  ],
-  "audio": "a1.mp3",
-  "agent": "d26e442b87bf4d2fa61e77e5c2571394"
- },
- {
-  "type": "attendant",
-  "title": "2. Station skipped (classroom scenario)",
-  "front": "You are on an uptown C train at 59 St–Columbus Circle. Choose where you want to go. Listen to the announcement, then ask the attendant for help.",
-  "options": [
-   "Strawberry Fields in Central Park",
-   "American Museum of Natural History"
-  ],
-  "routes": [
-   [
-    "Strawberry Fields in Central Park",
-    "72 St",
-    "uptown C trains skip 72 St; ride to 81 St, cross to the downtown C, and go back one stop to 72 St (or walk south from 81 St)"
-   ],
-   [
-    "American Museum of Natural History",
-    "81 St",
-    "not affected; stay on the C and get off at 81 St"
-   ]
-  ],
-  "condition": "You don't want to walk much.",
-  "start": "59 St–Columbus Circle, on an uptown C train",
-  "problem": "(classroom scenario) due to station work, uptown C trains skip 72 St; downtown trains still stop there",
-  "ann": "“Attention passengers: due to station work, uptown C trains will not stop at 72 Street.”",
-  "fictional": true,
-  "items": [
-   [
-    "Said the destination and their situation",
-    "e.g. \"You don't want to walk much.\"",
-    ""
-   ],
-   [
-    "Where to change",
-    "81 St (then take the train back)",
-    "No change needed"
-   ],
-   [
-    "Which train",
-    "C",
-    "C"
-   ],
-   [
-    "Direction",
-    "Downtown (from 81 St)",
-    "Uptown"
-   ],
-   [
-    "Where to get off",
-    "72 St",
-    "81 St"
-   ]
-  ],
-  "audio": "a4.mp3",
-  "agent": "e4830977e8cd451faa1b753adaf6e813"
- },
- {
-  "type": "chat",
-  "title": "3. Phone call: How's New York?",
-  "front": "Your friend Emma from Chicago is calling you. She wants to hear about your trip to New York.",
-  "options": [
-   "Tell her about one place you visited and how it was.",
-   "Tell her about one food you tried and what you thought."
-  ],
-  "condition": "Answer with details, not just yes or no.",
-  "friend": "Emma",
-  "items": [
-   [
-    "Answered with details or reasons, not just yes or no",
-    "e.g. \"It was amazing because...\""
-   ],
-   [
-    "Reacted to what the friend said",
-    "e.g. \"Oh, really?\", \"That sounds fun!\""
-   ],
-   [
-    "Asked the friend at least one question back",
-    "e.g. \"How about you?\""
-   ],
-   [
-    "Tell her about one place you visited and how it was.",
-    ""
-   ],
-   [
-    "Tell her about one food you tried and what you thought.",
-    ""
-   ]
-  ],
-  "agent": "9b3af95cbea7486b99a34a6f3030f2d5"
- },
- {
-  "type": "chat",
-  "title": "4. Phone call: Let's hang out!",
-  "front": "Your friend Maya lives in New York. She is calling to make plans to meet you.",
-  "options": [
-   "You really want Korean food. Convince Maya, and give your reasons.",
-   "Agree on a day, a time, and a place to meet."
-  ],
-  "condition": "Answer with details, not just yes or no.",
-  "friend": "Maya",
-  "items": [
-   [
-    "Answered with details or reasons, not just yes or no",
-    "e.g. \"It was amazing because...\""
-   ],
-   [
-    "Reacted to what the friend said",
-    "e.g. \"Oh, really?\", \"That sounds fun!\""
-   ],
-   [
-    "Asked the friend at least one question back",
-    "e.g. \"How about you?\""
-   ],
-   [
-    "You really want Korean food. Convince Maya, and give your reasons.",
-    ""
-   ],
-   [
-    "Agree on a day, a time, and a place to meet.",
-    ""
-   ]
-  ],
-  "agent": "b9b4d41935a74fd8a11dfeefae2467aa"
- },
- {
-  "type": "order",
-  "title": "5. McDonald's drive-thru",
-  "agent": "a353ccbcc46743609b33bdd0294201c2",
-  "front": "You are on a road trip with a friend. You are at a McDonald's drive-thru. Order for both of you through the speaker.",
-  "options": [
-   "Your friend wants a McChicken meal with a Sprite.",
-   "Choose something for yourself from the menu."
-  ],
-  "condition": "You don't like pickles.",
-  "items": [
-   [
-    "Ordered the friend's McChicken meal with a Sprite",
-    ""
-   ],
-   [
-    "Ordered their own food clearly",
-    ""
-   ],
-   [
-    "Answered the crew's questions (meal, size, drink, sauce)",
-    ""
-   ],
-   [
-    "Asked for no pickles (if their food has pickles) or another change",
-    "e.g. \"No pickles, please.\""
-   ],
-   [
-    "Caught the mistake when the order was read back, and understood the total",
-    "The crew member makes one mistake on purpose."
-   ]
-  ],
-  "menu": [
-   [
-    "Big Mac",
-    "$6.49"
-   ],
-   [
-    "Quarter Pounder with Cheese",
-    "$6.79"
-   ],
-   [
-    "McChicken",
-    "$3.29"
-   ],
-   [
-    "10 pc Chicken McNuggets",
-    "$6.29"
-   ],
-   [
-    "Filet-O-Fish",
-    "$5.49"
-   ],
-   [
-    "Make it a meal (medium fries + medium drink)",
-    "+$4.00"
-   ],
-   [
-    "Fries  S / M / L",
-    "$2.49 / $3.49 / $4.29"
-   ],
-   [
-    "Drink (Coke, Diet Coke, Sprite, iced tea)  S / M / L",
-    "$1.79 / $2.29 / $2.79"
-   ],
-   [
-    "McFlurry with Oreo",
-    "$4.49"
-   ],
-   [
-    "Apple Pie",
-    "$1.79"
-   ]
-  ]
- },
- {
-  "type": "order",
-  "title": "6. McDonald's counter (something's sold out)",
-  "agent": "593137b8195f4afda7e33150587e4ab3",
-  "front": "You are at a busy McDonald's in Times Square. Order a meal and a dessert at the counter.",
-  "options": [
-   "Order a meal and a dessert.",
-   "Ask for one special thing (extra sauce, no ice, no onions…)."
-  ],
-  "condition": "If something isn't available, choose something else.",
-  "items": [
-   [
-    "Ordered a meal clearly (main, size, drink)",
-    ""
-   ],
-   [
-    "Asked for a dessert, and chose something else if it wasn't available",
-    "The ice cream machine is broken, so no McFlurry."
-   ],
-   [
-    "Made a special request",
-    "e.g. \"Can I get extra BBQ sauce?\""
-   ],
-   [
-    "Corrected the item the crew member misheard, and answered \"For here or to go?\"",
-    "The crew member mishears one item on purpose."
-   ],
-   [
-    "Understood the total and paid",
-    ""
-   ]
-  ],
-  "menu": [
-   [
-    "Big Mac",
-    "$6.49"
-   ],
-   [
-    "Quarter Pounder with Cheese",
-    "$6.79"
-   ],
-   [
-    "McChicken",
-    "$3.29"
-   ],
-   [
-    "10 pc Chicken McNuggets",
-    "$6.29"
-   ],
-   [
-    "Filet-O-Fish",
-    "$5.49"
-   ],
-   [
-    "Make it a meal (medium fries + medium drink)",
-    "+$4.00"
-   ],
-   [
-    "Fries  S / M / L",
-    "$2.49 / $3.49 / $4.29"
-   ],
-   [
-    "Drink (Coke, Diet Coke, Sprite, iced tea)  S / M / L",
-    "$1.79 / $2.29 / $2.79"
-   ],
-   [
-    "McFlurry with Oreo",
-    "$4.49"
-   ],
-   [
-    "Apple Pie",
-    "$1.79"
-   ]
-  ]
- }
-];
+let CARDS = [];  // loaded from /missions.json
 
 const $ = id => document.getElementById(id);
 const esc = s => String(s||"").replace(/[&<>"]/g, ch => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[ch]));
-let cur = Shell.startIndex(CARDS.length), busy = false, curSession = null, timer = null;
+let cur = 0, busy = false, curSession = null, timer = null;
 function heardOf(id) { try { return !!JSON.parse(localStorage.getItem("heard") || "{}")[id]; } catch { return false; } }
 function lock(on) {
   $("judge").disabled = on; [...$("callList").children].forEach(b => b.disabled = on);
@@ -501,8 +173,9 @@ async function loadCalls() {
   const list = $("callList"); list.innerHTML = "";
   say("통화 목록을 불러오는 중…");
   try {
-    const { sessions } = await post("/api/sessions", {});
-    if (!sessions.length) { say("이 미션의 통화가 아직 없어요. 학생이 통화를 마치면 새로고침을 눌러 주세요."); return; }
+    const today = new Date(); today.setHours(0, 0, 0, 0);
+    const { sessions } = await post("/api/sessions", $("allDays").checked ? {} : { since: today.toISOString() });
+    if (!sessions.length) { say($("allDays").checked ? "이 미션의 통화가 아직 없어요." : "오늘 이 미션의 통화가 아직 없어요. 학생이 통화를 마치면 새로고침을 눌러 주세요."); return; }
     say("최신순이에요. 통화를 누르면 바로 판정해요.");
     sessions.forEach((s, i) => {
       const b = document.createElement("button"); b.type = "button"; b.className = "call";
@@ -511,52 +184,76 @@ async function loadCalls() {
       const dur = s.seconds ? `${Math.floor(s.seconds/60)}:${String(Math.round(s.seconds%60)).padStart(2,"0")}` : "";
       b.dataset.id = s.id;
       b.innerHTML = (s.student ? `<span class="who">${esc(s.student)}</span>` : "") + `<span>${t ? day + t.toLocaleTimeString([], { hour:"2-digit", minute:"2-digit" }) : "?"}</span><span class="d">${dur}</span>` +
-        (s.status === "active" ? '<span class="new">통화 중</span>' : i === 0 ? '<span class="new">최신</span>' : "") + (heardOf(s.id) ? '<span class="ear">귀로 OK</span>' : "");
+        (s.status === "active" ? '<span class="new">통화 중</span>' : i === 0 ? '<span class="new">최신</span>' : "") + (cached(s.id) ? '<span class="ear">판정됨</span>' : "") + (heardOf(s.id) ? '<span class="ear">귀로 OK</span>' : "");
       b.onclick = () => pickCall(s, b);
       list.appendChild(b);
     });
   } catch (e) { say(e.message, true); }
 }
 
+const cacheKey = id => "judge:" + id;
+function cached(id) { try { return JSON.parse(localStorage.getItem(cacheKey(id)) || "null"); } catch { return null; } }
+
 async function pickCall(s, btn) {
   if (busy) return;
   [...$("callList").children].forEach(x => x.classList.toggle("on", x === btn));
+  curSession = s.id; $("heard").checked = heardOf(s.id);
+  const saved = cached(s.id);
+  if (saved && saved.mission === cur) { $("tx").value = saved.tx || ""; show(saved.r, saved.at); return; }
   say("대화 기록을 불러오는 중…");
   try {
     const { transcript } = await post("/api/sessions", { sessionId: s.id });
     if (!transcript) { say("이 통화에는 대화 기록이 없어요.", true); return; }
-    $("tx").value = transcript; curSession = s.id; $("heard").checked = heardOf(s.id);
+    $("tx").value = transcript;
     await judge();
   } catch (e) { say(e.message, true); }
 }
 
 async function judge() {
-  const tx = $("tx").value.trim(), c = CARDS[cur];
+  const tx = $("tx").value.trim();
   if (!tx) { say("통화를 고르거나 대화 기록을 붙여넣어 주세요.", true); return; }
   busy = true; lock(true); const keep = $("heard").checked; resetResult(); $("heard").checked = keep;
-  say("판정 중이에요. AI가 3번 확인해서 다수결로 정해요 (약 30초).");
+  say("판정 중이에요. AI가 두 번 확인하고, 둘이 다르면 한 번 더 확인해요 (보통 10~30초).");
   try {
     const r = await post("/api/judge", { transcript: tx });
-    const items = Array.isArray(r.items) ? r.items : [];
-    [...$("check").children].forEach((li,i) => {
-      const it = items[i] || {}; li.classList.add(it.done ? "yes" : "no");
-      const fb = document.createElement("div"); fb.className = "fb";
-      fb.innerHTML = (it.evidence ? `<q>${esc(it.evidence)}</q> — ` : "") + esc(it.note || "") + (r.runs > 1 ? ` <span class="v">${it.votes}/${r.runs}</span>` : "");
-      li.firstElementChild.appendChild(fb);
-    });
-    const ok = r.result === "SUCCESS";
-    $("verdictRow").className = "verdict " + (ok ? "ok" : "no");
-    $("verdict").textContent = ok ? "미션 성공" : "아직이에요";
-    $("runs").textContent = (c.type === "attendant" && r.choice ? `${r.choice} 선택 · ` : "") + `${c.items.length}개 중 ${items.filter(x => x.done).length}개 달성` + (r.runs > 1 ? ` · ${r.runs}번 확인해 다수결 (항목 옆 숫자 = 달성으로 본 횟수)` : "");
-    $("summary").textContent = r.summary || "";
-    const arr = x => Array.isArray(x) ? x : [];
-    $("strengths").innerHTML = arr(r.strengths).map(t => `<li>“${esc(t.quote)}”<span class="why">${esc(t.why)}</span></li>`).join("") || "<li class='muted'>—</li>";
-    $("tips").innerHTML = arr(r.tips).map(t => `<li class="swap"><s>${esc(t.original)}</s> → <b>${esc(t.better)}</b><span class="why">${esc(t.why)}</span></li>`).join("") || "<li class='muted'>—</li>";
-    $("next").textContent = r.next || "";
-    $("out").hidden = false; $("fb").hidden = false; say("");
-    $("checkPanel").scrollIntoView({ behavior:"smooth", block:"start" });
+    const at = Date.now();
+    if (curSession) try { localStorage.setItem(cacheKey(curSession), JSON.stringify({ mission: cur, tx, r, at })); } catch {}
+    const chip = [...$("callList").children].find(x => x.dataset.id === curSession);
+    if (chip && ![...chip.querySelectorAll(".ear")].some(e => e.textContent === "판정됨")) chip.insertAdjacentHTML("beforeend", '<span class="ear">판정됨</span>');
+    show(r);
   } catch (e) { say(e.message, true); }
   finally { busy = false; lock(false); }
+}
+
+function show(r, savedAt) {
+  const c = CARDS[cur], keep = $("heard").checked; resetResult(); $("heard").checked = keep;
+  const items = Array.isArray(r.items) ? r.items : [];
+  [...$("check").children].forEach((li,i) => {
+    const it = items[i] || {}; li.classList.add(it.done ? "yes" : "no");
+    const fb = document.createElement("div"); fb.className = "fb";
+    fb.innerHTML = (it.evidence ? `<q>${esc(it.evidence)}</q> — ` : "") + esc(it.note || "") + (r.runs > 1 ? ` <span class="v">${it.votes}/${r.runs}</span>` : "");
+    li.firstElementChild.appendChild(fb);
+  });
+  const ok = r.result === "SUCCESS";
+  $("verdictRow").className = "verdict " + (ok ? "ok" : "no");
+  $("verdict").textContent = ok ? "미션 성공" : "아직이에요";
+  $("runs").textContent = (c.type === "attendant" && r.choice ? `${r.choice} 선택 · ` : "") + `${c.items.length}개 중 ${items.filter(x => x.done).length}개 달성` + (r.runs > 1 ? ` · AI ${r.runs}번 확인 (항목 옆 숫자 = 달성으로 본 횟수)` : "");
+  $("summary").textContent = r.summary || "";
+  const arr = x => Array.isArray(x) ? x : [];
+  $("strengths").innerHTML = arr(r.strengths).map(t => `<li>“${esc(t.quote)}”<span class="why">${esc(t.why)}</span></li>`).join("") || "<li class='muted'>—</li>";
+  $("tips").innerHTML = arr(r.tips).map(t => `<li class="swap"><s>${esc(t.original)}</s> → <b>${esc(t.better)}</b><span class="why">${esc(t.why)}</span></li>`).join("") || "<li class='muted'>—</li>";
+  $("next").textContent = r.next || "";
+  $("out").hidden = false; $("fb").hidden = false;
+  if (savedAt) {
+    say(`저장된 판정이에요 (${new Date(savedAt).toLocaleTimeString([], { hour:"2-digit", minute:"2-digit" })}). `);
+    const again = document.createElement("button"); again.type = "button"; again.className = "linkish"; again.textContent = "다시 판정하기";
+    again.onclick = async () => {
+      if (!$("tx").value.trim()) { try { const { transcript } = await post("/api/sessions", { sessionId: curSession }); $("tx").value = transcript || ""; } catch (e) { say(e.message, true); return; } }
+      judge();
+    };
+    $("callsMsg").appendChild(again);
+  } else say("");
+  $("checkPanel").scrollIntoView({ behavior:"smooth", block:"start" });
 }
 
 $("tabs").addEventListener("click", e => { const b = e.target.closest("button"); if (!b) return; cur = +b.dataset.i; render(); if ($("pin").value.trim()) loadCalls(); });
@@ -570,11 +267,14 @@ $("heard").addEventListener("change", () => {
 });
 $("judge").addEventListener("click", judge);
 $("loadCalls").addEventListener("click", loadCalls);
+$("allDays").addEventListener("change", loadCalls);
 $("pin").addEventListener("change", () => { if ($("pin").value.trim()) loadCalls(); });
 
 try { $("pin").value = localStorage.getItem("judgePin") || ""; } catch {}
-render();
-if ($("pin").value.trim()) loadCalls(); else say("오른쪽 위에 교사 PIN을 넣으면 최근 통화가 보여요.");
+fetch("/missions.json").then(r => { if (!r.ok) throw 0; return r.json(); }).then(d => {
+  CARDS = d; cur = Shell.startIndex(CARDS.length); render();
+  if ($("pin").value.trim()) loadCalls(); else say("오른쪽 위에 교사 PIN을 넣으면 최근 통화가 보여요.");
+}).catch(() => say("미션 정보를 불러오지 못했어요. 새로고침해 주세요.", true));
 </script>
 </body>
 </html>
