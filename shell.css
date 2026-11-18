@@ -29,7 +29,7 @@ button{font:inherit;color:inherit}
 .top .end{margin-left:auto;display:flex;align-items:center;gap:var(--s2)}
 
 /* Page frame: mission list + content */
-.frame{max-width:1080px;margin:0 auto;padding:var(--s5) var(--s5) 140px;display:grid;grid-template-columns:240px minmax(0,1fr);gap:var(--s6);align-items:start}
+.frame{max-width:1080px;margin:0 auto;padding:var(--s5) var(--s5) var(--frame-pb,140px);display:grid;grid-template-columns:240px minmax(0,1fr);gap:var(--s6);align-items:start}
 .missions{position:sticky;top:80px;display:grid;gap:var(--s4)}
 .missions h2{margin:0 0 var(--s1);padding:0 10px;font-size:13px;font-weight:600;color:var(--muted);display:flex;align-items:center;gap:var(--s2)}
 .missions h2 i{width:7px;height:7px;border-radius:50%}
@@ -62,7 +62,8 @@ input.field{font:inherit;font-size:14px;padding:6px 10px;border:1px solid var(--
 
 @media (max-width:820px){
   .frame{grid-template-columns:1fr;gap:var(--s4);padding-top:var(--s4)}
-  .missions{position:static;display:flex;gap:var(--s2);overflow-x:auto;padding-bottom:var(--s1);scrollbar-width:thin}
+  .missions{position:static;display:flex;gap:var(--s2);overflow-x:auto;padding-bottom:var(--s1);scrollbar-width:none}
+  .missions::-webkit-scrollbar{display:none}
   .missions .group{display:contents}
   .missions h2{display:none}
   .missions button{width:auto;flex:none;white-space:nowrap;border-color:var(--line);background:var(--card)}
